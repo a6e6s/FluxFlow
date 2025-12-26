@@ -111,19 +111,20 @@
     Alpine.data('kanbanBoard', () => ({
         draggedTaskId: null,
         sortableInstances: [],
+        initialized: false,
 
         init() {
             const component = this;
 
-            // Initialize sortable when component mounts (if columns exist)
+            // Initialize sortable when component mounts
             this.waitForSortable(() => {
                 this.initSortable();
             });
 
-            // Re-initialize after Livewire updates this component
+            // Re-initialize only when our specific component updates
             Livewire.hook('morph.updated', ({ el, component: liveComponent }) => {
-                // Check if this morph is for our component's root element
-                if (component.$el.contains(el) || el === component.$el) {
+                // Only reinit if the kanban board element itself was morphed
+                if (el === component.$el) {
                     component.waitForSortable(() => {
                         setTimeout(() => component.initSortable(), 50);
                     });
@@ -136,8 +137,6 @@
                 callback();
             } else if (attempts < 50) {
                 setTimeout(() => this.waitForSortable(callback, attempts + 1), 100);
-            } else {
-                console.warn('SortableJS not loaded after 5 seconds');
             }
         },
 
@@ -151,22 +150,18 @@
             this.sortableInstances = [];
 
             const columns = this.$el.querySelectorAll('.kanban-column[data-column]');
-            console.log('Kanban: Found', columns.length, 'columns');
 
             if (columns.length === 0) {
-                console.log('Kanban: No columns found yet');
                 return;
             }
 
             columns.forEach(column => {
-                console.log('Kanban: Creating sortable for column:', column.dataset.column);
-
                 const instance = Sortable.create(column, {
                     group: 'kanban',
                     animation: 150,
                     ghostClass: 'opacity-30',
                     dragClass: 'shadow-glow',
-                    chosenClass: 'ring-2 ring-[#1392ec]',
+                    chosenClass: 'task-chosen',
                     filter: '.empty-state',
                     draggable: '[data-task-id]',
                     forceFallback: true,
@@ -176,7 +171,6 @@
                     onStart: (evt) => {
                         this.draggedTaskId = parseInt(evt.item.dataset.taskId);
                         document.body.style.cursor = 'grabbing';
-                        // Hide empty states during drag
                         document.querySelectorAll('.empty-state').forEach(el => {
                             el.style.display = 'none';
                         });
@@ -184,7 +178,6 @@
 
                     onEnd: (evt) => {
                         document.body.style.cursor = '';
-                        // Show empty states again
                         document.querySelectorAll('.empty-state').forEach(el => {
                             el.style.display = '';
                         });
@@ -195,20 +188,13 @@
                             .filter(el => el.dataset.taskId)
                             .map(el => parseInt(el.dataset.taskId));
 
-                        console.log('Kanban: Moving task', taskId, 'to', newStatus);
-
-                        // Optimistic UI is already handled by DOM manipulation
-                        // Now sync with server
                         $wire.moveTask(taskId, newStatus, orderedIds);
-
                         this.draggedTaskId = null;
                     }
                 });
 
                 this.sortableInstances.push(instance);
             });
-
-            console.log('Kanban: Sortable initialized for', this.sortableInstances.length, 'columns');
         }
     }));
 </script>

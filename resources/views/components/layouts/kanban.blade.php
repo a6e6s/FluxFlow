@@ -7,29 +7,25 @@
     x-data="{
         currentProjectId: null,
         init() {
-            // Listen for project selection to track current project
             Livewire.on('project-selected', (data) => {
                 this.currentProjectId = data.projectId;
             });
-        }
-    }"
-    @keydown.window="
-        // Ignore shortcuts when typing in inputs
-        if ($event.target.tagName === 'INPUT' || $event.target.tagName === 'TEXTAREA' || $event.target.isContentEditable) return;
-
-        // N - New Task (only if project is selected)
-        if ($event.key === 'n' || $event.key === 'N') {
-            if (currentProjectId) {
-                $event.preventDefault();
-                $dispatch('open-create-task-modal', { projectId: currentProjectId });
+        },
+        handleKeydown(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+            if (e.key === 'n' || e.key === 'N') {
+                if (this.currentProjectId) {
+                    e.preventDefault();
+                    this.$dispatch('open-create-task-modal', { projectId: this.currentProjectId });
+                }
+            }
+            if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                this.$dispatch('open-create-project-modal');
             }
         }
-        // P - New Project
-        if ($event.key === 'p' || $event.key === 'P') {
-            $event.preventDefault();
-            $dispatch('open-create-project-modal');
-        }
-    "
+    }"
+    @keydown.window="handleKeydown($event)"
     class="font-sans bg-slate-100 dark:bg-[#101a22] text-slate-900 dark:text-white overflow-hidden h-screen flex flex-col"
 >
     {{-- Header --}}
