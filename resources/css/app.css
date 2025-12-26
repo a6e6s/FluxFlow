@@ -26,6 +26,17 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
+
+    /* ZenFlow Pro Custom Colors */
+    --color-primary: #1392ec;
+    --color-background-light: #f6f7f8;
+    --color-background-dark: #101a22;
+    --color-surface-dark: #1c2630;
+    --color-card-dark: #232e3a;
+
+    /* Custom shadows */
+    --shadow-glow: 0 0 15px -3px rgba(19, 146, 236, 0.3);
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 @layer theme {
@@ -64,3 +75,45 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* Draggable styles */
+.draggable-source {
+    cursor: grab;
+}
+
+.draggable-source:active {
+    cursor: grabbing;
+}
+
+/* Details/Summary styles */
+details > summary {
+    list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Shadow glow utility */
+.shadow-glow {
+    box-shadow: 0 0 15px -3px rgba(19, 146, 236, 0.3);
+}

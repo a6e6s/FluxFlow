@@ -49,7 +49,7 @@ The system follows a strict ownership model:
 > 2. List projects for the authenticated user, ordered by `sort_order`.
 > 3. Include an 'Archive' section that reveals projects where `archived_at` is NOT NULL.
 > 4. Integrate **SortableJS** via Alpine.js for drag-and-drop reordering. On drop, call `reorderProjects(array $ids)`.
-> 5. UI: Dark theme (`bg-slate-900`), border-left tabs using `project.color`, and a progress ring (done_tasks/total_tasks)."
+> 5. UI: Dark theme (`bg-slate-900`), border-left tabs using `project.color`, and a progress ring (done_tasks/total_tasks). as the layout.html"
 
 ---
 
