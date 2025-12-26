@@ -98,7 +98,7 @@ class KanbanBoard extends Component
     // ─────────────────────────────────────────────────────────────
 
     #[On('project-selected')]
-    public function selectProject(int $projectId): void
+    public function selectProject(?int $projectId): void
     {
         $this->projectId = $projectId;
         $this->clearTaskCache();
