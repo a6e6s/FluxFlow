@@ -36,9 +36,13 @@
                     </button>
                 @endunless
 
-                <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-slate-200 dark:hover:bg-[#323d46] transition-colors">
-                    <x-lucide-filter class="size-4" />
-                    Filter
+                <button
+                    @click="$dispatch('open-edit-project-modal', { projectId: {{ $projectId }} })"
+                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-slate-200 dark:hover:bg-[#323d46] transition-colors"
+                    title="Edit Project"
+                >
+                    <x-lucide-pencil class="size-4" />
+                    Edit
                 </button>
                 <button
                     wire:click="$dispatch('open-create-task-modal', { projectId: {{ $projectId }} })"

@@ -131,6 +131,7 @@
     <livewire:task-details />
     <livewire:global-search />
     <livewire:create-project-modal />
+    <livewire:edit-project-modal />
     <livewire:create-task-modal />
 
     @fluxScripts

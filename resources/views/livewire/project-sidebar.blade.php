@@ -144,6 +144,13 @@
                                     class="absolute right-0 top-full mt-1 w-40 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 py-1"
                                 >
                                     <button
+                                        @click="open = false; $dispatch('open-edit-project-modal', { projectId: {{ $project->id }} })"
+                                        class="w-full px-3 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2"
+                                    >
+                                        <x-lucide-pencil class="size-4" />
+                                        Edit
+                                    </button>
+                                    <button
                                         wire:click="archiveProject({{ $project->id }})"
                                         class="w-full px-3 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2"
                                     >

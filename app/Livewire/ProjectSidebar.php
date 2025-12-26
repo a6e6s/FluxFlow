@@ -109,6 +109,13 @@ class ProjectSidebar extends Component
         unset($this->projects);
     }
 
+    #[On('project-updated')]
+    #[On('project-deleted')]
+    public function onProjectUpdated(): void
+    {
+        unset($this->projects, $this->archivedProjects);
+    }
+
     // ─────────────────────────────────────────────────────────────
     // Render
     // ─────────────────────────────────────────────────────────────
