@@ -113,7 +113,7 @@
                                                 {{ $task->title }}
                                             </p>
                                             <p class="text-xs text-slate-500">
-                                                {{ __('app.in') }} {{ $task->project->title }}
+                                                {{ __('app.in') }} {{ $task->project?->title ?? __('app.no_project') }}
                                             </p>
                                         </div>
                                         <span class="text-[10px] font-bold uppercase px-2 py-1 rounded {{ $task->status->bgColor() }} {{ $task->status->color() }}">

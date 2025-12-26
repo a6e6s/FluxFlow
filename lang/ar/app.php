@@ -12,6 +12,7 @@ return [
     'active_projects' => 'المشاريع النشطة',
     'archived_projects' => 'المشاريع المؤرشفة',
     'no_projects' => 'لا توجد مشاريع بعد',
+    'no_project' => 'بدون مشروع',
     'create_first_project' => 'أنشئ مشروعك الأول',
     'new_project' => 'مشروع جديد',
     'complete' => 'مكتمل',

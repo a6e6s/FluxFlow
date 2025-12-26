@@ -12,6 +12,7 @@ return [
     'active_projects' => 'Active Projects',
     'archived_projects' => 'Archived Projects',
     'no_projects' => 'No projects yet',
+    'no_project' => 'No project',
     'create_first_project' => 'Create your first project',
     'new_project' => 'New Project',
     'complete' => 'Complete',
