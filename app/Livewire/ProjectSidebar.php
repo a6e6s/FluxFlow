@@ -96,9 +96,11 @@ class ProjectSidebar extends Component
     }
 
     #[On('task-moved')]
+    #[On('project-archived')]
     public function refreshProjects(): void
     {
-        unset($this->projects);
+        unset($this->projects, $this->archivedProjects);
+        $this->selectedProjectId = null;
     }
 
     // ─────────────────────────────────────────────────────────────

@@ -168,6 +168,32 @@ class KanbanBoard extends Component
         $this->clearTaskCache();
     }
 
+    public function archiveProject(): void
+    {
+        if (!$this->projectId) {
+            return;
+        }
+
+        Project::query()
+            ->where('id', $this->projectId)
+            ->where('user_id', Auth::id())
+            ->update(['archived_at' => now()]);
+
+        $this->clearTaskCache();
+
+        // Notify sidebar to refresh
+        $this->dispatch('project-archived');
+
+        // Clear selection
+        $this->projectId = null;
+    }
+
+    #[On('task-updated')]
+    public function refreshTasks(): void
+    {
+        $this->clearTaskCache();
+    }
+
     protected function clearTaskCache(): void
     {
         unset($this->tasks, $this->todoTasks, $this->doingTasks, $this->reviewTasks, $this->doneTasks, $this->project);

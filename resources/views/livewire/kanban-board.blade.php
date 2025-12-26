@@ -23,6 +23,19 @@
                 </h1>
             </div>
             <div class="flex items-center gap-3">
+                {{-- Archive Project Button --}}
+                @unless($this->project->archived_at)
+                    <button
+                        wire:click="archiveProject"
+                        wire:confirm="Are you sure you want to archive this project? It will be moved to the archived section."
+                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-amber-500/10 dark:hover:bg-amber-500/10 transition-colors"
+                        title="Archive Project"
+                    >
+                        <x-lucide-archive class="size-4" />
+                        Archive
+                    </button>
+                @endunless
+
                 <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-slate-200 dark:hover:bg-[#323d46] transition-colors">
                     <x-lucide-filter class="size-4" />
                     Filter

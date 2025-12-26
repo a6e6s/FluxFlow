@@ -27,6 +27,7 @@
 <div
     data-task-id="{{ $task->id }}"
     wire:key="task-{{ $task->id }}"
+    @click="$dispatch('open-task-details', { taskId: {{ $task->id }} })"
     class="group draggable-source bg-white dark:bg-[#1c2630] p-4 rounded-xl border border-slate-200 dark:border-[#283239] hover:border-[#1392ec]/50 hover:shadow-glow transition-all duration-200 cursor-grab relative overflow-hidden"
 >
     {{-- Priority Border --}}

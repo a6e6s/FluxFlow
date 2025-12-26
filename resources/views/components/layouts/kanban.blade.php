@@ -104,6 +104,9 @@
         </main>
     </div>
 
+    {{-- Task Details Slide-over --}}
+    <livewire:task-details />
+
     @fluxScripts
 </body>
 </html>
