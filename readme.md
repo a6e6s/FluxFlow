@@ -1,5 +1,5 @@
 # 🌊 FluxFlow
-
+## Tasks that Grow, Work that Flows
 **A Modern Project & Task Management Dashboard**
 
 FluxFlow is a high-productivity Kanban workspace designed to bridge the gap between high-level project strategy and granular task execution. Built with the TALL Stack (Tailwind, Alpine.js, Laravel, Livewire), it emphasizes fluid motion, glassmorphic design, and power-user features.
@@ -84,7 +84,7 @@ FluxFlow is a high-productivity Kanban workspace designed to bridge the gap betw
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/fluxflow.git
+git clone https://github.com/a6e6s/FluxFlow.git
 cd fluxflow
 
 # Install PHP dependencies
@@ -348,7 +348,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Support
 
-If you have any questions or run into issues, please [open an issue](https://github.com/yourusername/fluxflow/issues) on GitHub.
+If you have any questions or run into issues, please [open an issue](https://github.com/a6e6s/FluxFlow.git/issues) on GitHub.
 
 ---
 
