@@ -2,7 +2,7 @@
 ## Tasks that Grow, Work that Flows
 **A Modern Project & Task Management Dashboard**
 
-FluxFlow is a high-productivity Kanban workspace designed to bridge the gap between high-level project strategy and granular task execution. Built with the TALL Stack (Tailwind, Alpine.js, Laravel, Livewire), it emphasizes fluid motion, glassmorphic design, and power-user features.
+FluxFlow is a high-productivity Kanban workspace designed to bridge the gap between high-level project strategy and granular task execution. Built with the TALL Stack (Tailwind, Alpine.js, Laravel, Livewire), it emphasizes fluid motion, a theme-aware interface, API access, and power-user features.
 
 ![FluxFlow Dashboard](public/screenshots/dashboard.png)
 
@@ -15,6 +15,7 @@ FluxFlow is a high-productivity Kanban workspace designed to bridge the gap betw
 - **Visual Identity** - Custom emoji icons and color-coded project tabs
 - **Progress Rings** - Real-time completion percentage for each project
 - **Priority Glow** - High-priority projects feature a subtle red glow indicator
+- **Compact Mode** - Collapse the sidebar to icon-only view with a quick toggle
 - **The Vault** - Collapsible archive section for completed or paused projects
 
 ![Project Sidebar](public/screenshots/sidebar.png)
@@ -54,7 +55,8 @@ FluxFlow is a high-productivity Kanban workspace designed to bridge the gap betw
   - `ESC` - Close any modal
   - `⌘K` / `Ctrl+K` - Open global search
 - **Smooth Animations** - Weighted, tactile drag interactions
-- **Dark Theme** - Easy on the eyes with glassmorphic design
+- **Theme Persistence** - Light and dark mode stay in sync across refreshes
+- **API Key Management** - Generate, regenerate, and copy a personal API key from the user menu
 
 ---
 
@@ -62,20 +64,21 @@ FluxFlow is a high-productivity Kanban workspace designed to bridge the gap betw
 
 | Technology | Purpose |
 |------------|---------|
-| **Laravel 12** | Backend framework & API |
-| **Livewire 3** | Real-time UI components |
+| **Laravel 13** | Backend framework & API |
+| **Livewire 4** | Real-time UI components |
 | **Alpine.js** | Frontend interactivity & animations |
-| **Tailwind CSS** | Utility-first styling |
+| **Tailwind CSS 4.1** | Utility-first styling |
 | **SortableJS** | Drag & drop functionality |
-| **SQLite** | Database (easily swappable to MySQL/PostgreSQL) |
+| **MariaDB** | Primary database engine |
 | **Flux UI** | Pre-built UI components |
+| **Scramble** | Generated OpenAPI documentation |
 
 ---
 
 ## 📦 Installation
 
 ### Prerequisites
-- PHP 8.2+
+- PHP 8.3+
 - Composer
 - Node.js 18+
 - npm or yarn
@@ -124,6 +127,62 @@ npm run dev
 # In a separate terminal (disable Xdebug for better performance)
 XDEBUG_MODE=off php artisan serve
 ```
+
+### API Access
+
+The workspace API is available under `/api/v1` and is authenticated with the API key created from the user dropdown.
+
+1. Open the user menu in the top-right corner.
+2. Choose **API Key**.
+3. Generate or regenerate a key, then copy it.
+4. Send it with either `Authorization: Bearer <api-key>` or `X-API-Key: <api-key>`.
+
+The API documentation is generated with Scramble and is available at `/docs/api`.
+
+#### Authentication
+
+- The API accepts a single user-scoped key per account.
+- The key is stored encrypted, while a SHA-256 hash is used for request authentication.
+- Requests without a valid key receive `401 Unauthenticated.`
+
+#### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/projects` | List the authenticated user’s active projects |
+| `POST` | `/api/v1/projects` | Create a project |
+| `GET` | `/api/v1/projects/{project}` | Show a project |
+| `PUT` / `PATCH` | `/api/v1/projects/{project}` | Update a project |
+| `DELETE` | `/api/v1/projects/{project}` | Delete a project |
+| `GET` | `/api/v1/projects/{project}/tasks` | List tasks for a project |
+| `POST` | `/api/v1/projects/{project}/tasks` | Create a task inside a project |
+| `GET` | `/api/v1/projects/{project}/tasks/{task}` | Show a task |
+| `PUT` / `PATCH` | `/api/v1/projects/{project}/tasks/{task}` | Update a task |
+| `DELETE` | `/api/v1/projects/{project}/tasks/{task}` | Delete a task |
+
+#### Project Payload
+
+- `title` - required string, 2-100 characters
+- `icon` - optional string, up to 50 characters
+- `color` - required hex color like `#3b82f6`
+- `priority` - `low`, `medium`, or `high`
+- `sort_order` - optional non-negative integer
+
+#### Task Payload
+
+- `title` - required string, 2-255 characters
+- `description` - optional string
+- `priority` - `low`, `medium`, or `high`
+- `status` - `todo`, `doing`, `review`, or `done`
+- `sort_order` - optional non-negative integer
+- `due_date` - optional date
+- `effort_score` - optional integer from 1 to 10
+- `assigned_to` - optional user ID
+
+#### Response Shape
+
+- Project responses include `id`, `title`, `icon`, `color`, `priority`, `sort_order`, `archived_at`, `created_at`, and `updated_at`.
+- Task responses include `id`, `project_id`, `assigned_to`, `title`, `description`, `priority`, `status`, `sort_order`, `due_date`, `effort_score`, `created_at`, and `updated_at`.
 
 ---
 
@@ -228,6 +287,7 @@ fluxflow/
 | `P` | New Project |
 | `ESC` | Close modal/slide-over |
 | `⌘K` / `Ctrl+K` | Open Global Search |
+| Sidebar arrow | Collapse or expand the project list |
 | `Enter` | Submit form / Select search result |
 
 ---
@@ -235,9 +295,15 @@ fluxflow/
 ## 🎯 Usage Guide
 
 ### Creating a Project
-1. Click the **+** button in the sidebar, or press **P**
+1. Click the **+** button beside Active Projects, or press **P**
 2. Enter project name, select icon, color, and priority
 3. Click "Create Project"
+
+### Managing Your API Key
+1. Open the user dropdown in the top-right corner
+2. Choose **API Key**
+3. Generate or regenerate a key
+4. Copy the key and use it in API requests
 
 ### Creating a Task
 1. Select a project from the sidebar
@@ -272,6 +338,11 @@ fluxflow/
 2. Type your search query
 3. Click a result to navigate directly
 
+### Theme Behavior
+1. Use the theme button in the header to switch between light and dark mode
+2. Your selection persists after refresh
+3. Modals, drawers, and the sidebar follow the same saved appearance
+
 ---
 
 ## 🔧 Configuration
@@ -284,11 +355,10 @@ APP_NAME=FluxFlow
 APP_ENV=local
 APP_DEBUG=true
 
-# Database (SQLite by default)
-DB_CONNECTION=sqlite
+# Database (MariaDB/MySQL)
+DB_CONNECTION=mysql
 
-# For MySQL, uncomment and configure:
-# DB_CONNECTION=mysql
+# Uncomment and configure as needed:
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
 # DB_DATABASE=fluxflow
@@ -358,3 +428,6 @@ If you have any questions or run into issues, please [open an issue](https://git
 
 
 
+## next update will focus on:
+ - [ ] adding team management
+ - [ ] adding user tasks and project management
