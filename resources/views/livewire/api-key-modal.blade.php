@@ -42,35 +42,35 @@
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
             @click.stop
-            class="relative w-full max-w-xl rounded-2xl border border-[#283239] bg-[#1c2630] shadow-2xl"
+            class="relative w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#1c2630]"
         >
-            <div class="flex items-center justify-between border-b border-[#283239] px-6 py-4">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
                     <div class="rounded-lg bg-[#1392ec]/10 p-2">
                         <x-lucide-key class="size-5 text-[#1392ec]" />
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-white">{{ __('API Key') }}</h2>
-                        <p class="text-sm text-slate-400">{{ __('Generate a key for external integrations and keep it private.') }}</p>
+                        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('API Key') }}</h2>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">{{ __('Generate a key for external integrations and keep it private.') }}</p>
                     </div>
                 </div>
 
                 <button
                     @click="$wire.close()"
-                    class="rounded-lg p-2 text-slate-400 transition-colors hover:bg-[#283239] hover:text-white"
+                    class="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#283239] dark:hover:text-white"
                 >
                     <x-lucide-x class="size-5" />
                 </button>
             </div>
 
             <div class="space-y-5 p-6">
-                <div class="rounded-2xl border border-[#283239] bg-[#101a22] p-4">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-[#283239] dark:bg-[#101a22]">
                     <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div class="space-y-1">
-                            <p class="text-sm font-medium text-white">
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $hasApiKey ? __('Active API key') : __('No API key yet') }}
                             </p>
-                            <p class="text-sm text-slate-400">
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
                                 {{ $generatedAtLabel !== '' ? __('Last generated :time', ['time' => $generatedAtLabel]) : __('Create a key to authenticate requests from your external application.') }}
                             </p>
                         </div>
@@ -81,13 +81,13 @@
                     </div>
 
                     <div class="mt-4 space-y-2">
-                        <label class="block text-sm font-medium text-slate-400">{{ __('API Key') }}</label>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('API Key') }}</label>
                         <div class="flex flex-col gap-3 sm:flex-row">
                             <input
                                 type="text"
                                 readonly
                                 wire:model="apiKey"
-                                class="min-w-0 flex-1 rounded-xl border border-[#283239] bg-[#0b1319] px-4 py-3 font-mono text-sm text-white placeholder:text-slate-600 focus:border-[#1392ec] focus:outline-none focus:ring-1 focus:ring-[#1392ec]"
+                                class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-900 placeholder:text-slate-500 focus:border-[#1392ec] focus:outline-none focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#0b1319] dark:text-white dark:placeholder:text-slate-600"
                                 placeholder="{{ __('Generate a key to display it here') }}"
                             />
 
@@ -95,7 +95,7 @@
                                 type="button"
                                 @click="copyKey($wire.apiKey)"
                                 :disabled="! $wire.apiKey"
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-[#283239] px-4 py-3 text-sm font-medium text-slate-300 transition-colors hover:bg-[#283239] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#283239] dark:text-slate-300 dark:hover:bg-[#283239] dark:hover:text-white"
                             >
                                 <x-lucide-copy class="size-4" />
                                 <span x-show="! copied">{{ __('Copy') }}</span>
@@ -109,7 +109,7 @@
                     <button
                         type="button"
                         @click="$wire.close()"
-                        class="px-4 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:text-white"
+                        class="px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                     >
                         {{ __('Close') }}
                     </button>
@@ -119,7 +119,7 @@
                         wire:click="generate"
                         wire:loading.attr="disabled"
                         wire:target="generate,regenerate"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-[#1392ec]/30 bg-[#1392ec]/10 px-5 py-2.5 text-sm font-medium text-[#8fd4ff] transition-colors hover:bg-[#1392ec]/20 disabled:opacity-50"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-[#1392ec]/30 bg-[#1392ec]/10 px-5 py-2.5 text-sm font-medium text-[#1392ec] transition-colors hover:bg-[#1392ec]/20 disabled:opacity-50"
                     >
                         <x-lucide-wand-sparkles class="size-4" />
                         <span wire:loading.remove wire:target="generate">{{ __('Generate') }}</span>

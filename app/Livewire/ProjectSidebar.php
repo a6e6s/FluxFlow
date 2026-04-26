@@ -10,12 +10,15 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
+use Livewire\Attributes\Session;
 use Livewire\Component;
 
 class ProjectSidebar extends Component
 {
     public ?int $selectedProjectId = null;
+
+    #[Session]
+    public bool $collapsed = false;
 
     // ─────────────────────────────────────────────────────────────
     // Computed Properties
@@ -57,6 +60,11 @@ class ProjectSidebar extends Component
     {
         $this->selectedProjectId = $projectId;
         $this->dispatch('project-selected', projectId: $projectId);
+    }
+
+    public function toggleSidebar(): void
+    {
+        $this->collapsed = ! $this->collapsed;
     }
 
     public function reorderProjects(array $ids): void

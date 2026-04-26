@@ -30,19 +30,19 @@
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
             @click.stop
-            class="relative w-full max-w-md bg-[#1c2630] rounded-2xl shadow-2xl border border-[#283239]"
+            class="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#1c2630]"
         >
             {{-- Header --}}
-            <div class="flex items-center justify-between px-6 py-4 border-b border-[#283239]">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-[#1392ec]/10 rounded-lg">
                         <x-lucide-folder-plus class="size-5 text-[#1392ec]" />
                     </div>
-                    <h2 class="text-lg font-semibold text-white">{{ __('app.new_project') }}</h2>
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('app.new_project') }}</h2>
                 </div>
                 <button
                     @click="$wire.close()"
-                    class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#283239] transition-colors"
+                    class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-[#283239] transition-colors"
                 >
                     <x-lucide-x class="size-5" />
                 </button>
@@ -52,14 +52,14 @@
             <form wire:submit="create" class="p-6 space-y-5">
                 {{-- Project Title --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('app.project_name') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('app.project_name') }}</label>
                     <input
                         type="text"
                         wire:model="title"
                         x-init="$nextTick(() => { if (open) $el.focus() })"
                         x-effect="if (open) $el.focus()"
                         placeholder="{{ __('app.enter_project_name') }}"
-                        class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                        class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                     />
                     @error('title')
                         <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -68,7 +68,7 @@
 
                 {{-- Icon Picker --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('app.icon_optional') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('app.icon_optional') }}</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach($iconOptions as $iconOption)
                             <button
@@ -77,7 +77,7 @@
                                 @class([
                                     'size-10 flex items-center justify-center rounded-lg text-lg transition-all',
                                     'bg-[#1392ec]/20 ring-2 ring-[#1392ec]' => $icon === $iconOption,
-                                    'bg-[#101a22] hover:bg-[#283239]' => $icon !== $iconOption,
+                                    'bg-slate-100 hover:bg-slate-200 dark:bg-[#101a22] dark:hover:bg-[#283239]' => $icon !== $iconOption,
                                 ])
                             >
                                 {{ $iconOption }}
@@ -88,7 +88,7 @@
 
                 {{-- Color Picker --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('app.color') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('app.color') }}</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach($colorOptions as $colorOption)
                             <button
@@ -96,7 +96,7 @@
                                 wire:click="$set('color', '{{ $colorOption }}')"
                                 @class([
                                     'size-8 rounded-full transition-all',
-                                    'ring-2 ring-offset-2 ring-offset-[#1c2630]' => $color === $colorOption,
+                                    'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-[#1c2630]' => $color === $colorOption,
                                 ])
                                 style="background-color: {{ $colorOption }}; {{ $color === $colorOption ? 'ring-color: ' . $colorOption : '' }}"
                             ></button>
@@ -106,7 +106,7 @@
 
                 {{-- Priority --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('app.priority') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('app.priority') }}</label>
                     <div class="grid grid-cols-3 gap-2">
                         @foreach(['low' => __('app.low'), 'medium' => __('app.medium'), 'high' => __('app.high')] as $value => $label)
                             <button
@@ -115,7 +115,7 @@
                                 @class([
                                     'px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
                                     'bg-[#1392ec] text-white' => $priority === $value,
-                                    'bg-[#101a22] text-slate-400 hover:bg-[#283239] hover:text-white' => $priority !== $value,
+                                    'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-[#101a22] dark:text-slate-400 dark:hover:bg-[#283239] dark:hover:text-white' => $priority !== $value,
                                 ])
                             >
                                 {{ $label }}
@@ -125,8 +125,8 @@
                 </div>
 
                 {{-- Preview --}}
-                <div class="p-4 bg-[#101a22] rounded-lg border border-[#283239]">
-                    <p class="text-xs text-slate-500 mb-2">{{ __('app.preview') }}</p>
+                <div class="p-4 rounded-lg border border-slate-200 bg-slate-50 dark:border-[#283239] dark:bg-[#101a22]">
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mb-2">{{ __('app.preview') }}</p>
                     <div class="flex items-center gap-3">
                         <div
                             class="size-10 rounded-lg flex items-center justify-center text-lg"
@@ -139,7 +139,7 @@
                             @endif
                         </div>
                         <div>
-                            <p class="text-white font-medium">{{ $title ?: 'Project Name' }}</p>
+                            <p class="font-medium text-slate-900 dark:text-white">{{ $title ?: 'Project Name' }}</p>
                             <p class="text-xs" style="color: {{ $color }}">{{ ucfirst($priority) }} Priority</p>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                     <button
                         type="button"
                         @click="$wire.close()"
-                        class="px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                        class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                     >
                         {{ __('app.cancel') }}
                     </button>

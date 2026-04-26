@@ -30,19 +30,19 @@
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
             @click.stop
-            class="relative w-full max-w-md bg-[#1c2630] rounded-2xl shadow-2xl border border-[#283239]"
+            class="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#1c2630]"
         >
             {{-- Header --}}
-            <div class="flex items-center justify-between px-6 py-4 border-b border-[#283239]">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-[#1392ec]/10 rounded-lg">
                         <x-lucide-user class="size-5 text-[#1392ec]" />
                     </div>
-                    <h2 class="text-lg font-semibold text-white">{{ __('Profile Settings') }}</h2>
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('Profile Settings') }}</h2>
                 </div>
                 <button
                     @click="$wire.close()"
-                    class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#283239] transition-colors"
+                    class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-[#283239] transition-colors"
                 >
                     <x-lucide-x class="size-5" />
                 </button>
@@ -52,13 +52,13 @@
             <form wire:submit="save" class="p-6 space-y-5">
                 {{-- Name --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('Name') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('Name') }}</label>
                     <input
                         type="text"
                         wire:model="name"
                         x-init="$nextTick(() => { if (open) $el.focus() })"
                         placeholder="{{ __('Enter your name') }}"
-                        class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                        class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                     />
                     @error('name')
                         <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -67,12 +67,12 @@
 
                 {{-- Email --}}
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('Email') }}</label>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('Email') }}</label>
                     <input
                         type="email"
                         wire:model="email"
                         placeholder="{{ __('Enter your email') }}"
-                        class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                        class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                     />
                     @error('email')
                         <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -80,17 +80,17 @@
                 </div>
 
                 {{-- Password Section --}}
-                <div class="border-t border-[#283239] pt-5">
-                    <h3 class="text-sm font-medium text-slate-400 mb-4">{{ __('Change Password') }} <span class="text-slate-500">({{ __('optional') }})</span></h3>
-                    
+                <div class="border-t border-slate-200 pt-5 dark:border-[#283239]">
+                    <h3 class="mb-4 text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('Change Password') }} <span class="text-slate-500">({{ __('optional') }})</span></h3>
+
                     {{-- Current Password --}}
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('Current Password') }}</label>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('Current Password') }}</label>
                         <input
                             type="password"
                             wire:model="current_password"
                             placeholder="{{ __('Enter current password') }}"
-                            class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                         />
                         @error('current_password')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -99,12 +99,12 @@
 
                     {{-- New Password --}}
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('New Password') }}</label>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('New Password') }}</label>
                         <input
                             type="password"
                             wire:model="password"
                             placeholder="{{ __('Enter new password') }}"
-                            class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                         />
                         @error('password')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -113,12 +113,12 @@
 
                     {{-- Confirm Password --}}
                     <div>
-                        <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('Confirm Password') }}</label>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{{ __('Confirm Password') }}</label>
                         <input
                             type="password"
                             wire:model="password_confirmation"
                             placeholder="{{ __('Confirm new password') }}"
-                            class="w-full px-4 py-3 bg-[#101a22] border border-[#283239] rounded-lg text-white placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors"
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-500 focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] transition-colors dark:border-[#283239] dark:bg-[#101a22] dark:text-white dark:placeholder-slate-500"
                         />
                     </div>
                 </div>
@@ -128,7 +128,7 @@
                     <button
                         type="button"
                         @click="$wire.close()"
-                        class="px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                        class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                     >
                         {{ __('Cancel') }}
                     </button>

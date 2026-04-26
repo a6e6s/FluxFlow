@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
@@ -52,7 +52,7 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 {{-- Theme Toggle --}}
-                <button @click="document.documentElement.classList.toggle('dark')"
+                <button @click="window.FluxFlowTheme.toggle()"
                     class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 dark:hover:bg-[#283239] text-slate-500 dark:text-slate-400 transition-colors"
                     title="Toggle theme">
                     <x-lucide-sun class="size-5 dark:hidden" />

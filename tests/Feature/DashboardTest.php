@@ -2,18 +2,27 @@
 
 use App\Models\User;
 
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
+
 test('guests are redirected to the login page', function () {
-    $this->get('/')->assertRedirect('/login');
+    get('/')->assertRedirect('/login');
 });
 
 test('authenticated users can visit the dashboard (kanban board)', function () {
-    $this->actingAs($user = User::factory()->create());
+    /** @var User $user */
+    $user = User::factory()->create();
 
-    $this->get('/')->assertStatus(200);
+    actingAs($user);
+
+    get('/')->assertStatus(200);
 });
 
 test('dashboard route redirects to root', function () {
-    $this->actingAs($user = User::factory()->create());
+    /** @var User $user */
+    $user = User::factory()->create();
 
-    $this->get('/dashboard')->assertRedirect('/');
+    actingAs($user);
+
+    get('/dashboard')->assertRedirect('/');
 });
