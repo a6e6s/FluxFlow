@@ -98,11 +98,11 @@
                 </button>
 
                 {{-- Settings --}}
-                <button @click="$dispatch('open-user-profile-modal')"
+                {{-- <button @click="$dispatch('open-user-profile-modal')"
                     class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 dark:hover:bg-[#283239] text-slate-500 dark:text-slate-400 transition-colors"
                     title="{{ __('Profile Settings') }}">
                     <x-lucide-settings class="size-5" />
-                </button>
+                </button> --}}
             </div>
 
             <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
@@ -134,6 +134,12 @@
 
                     {{-- Menu Items --}}
                     <div class="py-1">
+                        <button @click="$dispatch('open-api-key-modal'); open = false"
+                            class="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-[#283239] transition-colors">
+                            <x-lucide-key class="size-4" />
+                            {{ __('API Key') }}
+                        </button>
+
                         <button @click="$dispatch('open-user-profile-modal'); open = false"
                             class="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-[#283239] transition-colors">
                             <x-lucide-settings class="size-4" />
@@ -173,6 +179,7 @@
     <livewire:create-project-modal />
     <livewire:edit-project-modal />
     <livewire:create-task-modal />
+    <livewire:api-key-modal />
     <livewire:user-profile-modal />
 
     @fluxScripts

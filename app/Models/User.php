@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,7 +16,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
@@ -37,6 +38,8 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'api_key',
+        'api_key_hash',
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
@@ -50,6 +53,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'api_key' => 'encrypted',
+            'api_key_generated_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -65,6 +70,24 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function hasApiKey(): bool
+    {
+        return filled($this->api_key);
+    }
+
+    public function generateApiKey(): string
+    {
+        $plainTextApiKey = 'ff_'.Str::random(48);
+
+        $this->forceFill([
+            'api_key' => $plainTextApiKey,
+            'api_key_hash' => hash('sha256', $plainTextApiKey),
+            'api_key_generated_at' => now(),
+        ])->save();
+
+        return $plainTextApiKey;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -88,7 +111,7 @@ class User extends Authenticatable
     public function getProfilePhotoUrlAttribute(): ?string
     {
         return $this->profile_photo_path
-            ? asset('storage/' . $this->profile_photo_path)
+            ? asset('storage/'.$this->profile_photo_path)
             : null;
     }
 }
