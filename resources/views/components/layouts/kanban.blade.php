@@ -52,11 +52,14 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 {{-- Theme Toggle --}}
-                <button type="button" x-data x-on:click="$flux.dark = ! $flux.dark"
+                <button type="button"
+                    x-data="{ dark: window.FluxFlowTheme.isDark() }"
+                    x-init="window.addEventListener('flux-theme-changed', (event) => { dark = event.detail.dark })"
+                    x-on:click="window.FluxFlowTheme.toggle()"
                     class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 dark:hover:bg-[#283239] text-slate-500 dark:text-slate-400 transition-colors"
                     title="Toggle theme">
-                    <x-lucide-sun class="size-5" x-show="$flux.dark" />
-                    <x-lucide-moon class="size-5" x-show="! $flux.dark" />
+                    <x-lucide-sun class="size-5" x-show="dark" />
+                    <x-lucide-moon class="size-5" x-show="! dark" />
                 </button>
 
                 {{-- Language Switcher --}}
@@ -182,7 +185,6 @@
     <livewire:api-key-modal />
     <livewire:user-profile-modal />
 
-    @fluxScripts
 </body>
 
 </html>

@@ -16,6 +16,7 @@ test('landing page highlights the latest product updates', function (): void {
 test('landing page uses flux appearance instead of legacy dark mode storage', function (): void {
     get('/')
         ->assertOk()
-        ->assertSee('window.Flux.applyAppearance')
+        ->assertSee('window.FluxFlowTheme.toggle()')
+        ->assertDontSee('/flux/flux.js')
         ->assertDontSee("localStorage.getItem('darkMode')");
 });

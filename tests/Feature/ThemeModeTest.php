@@ -16,7 +16,8 @@ test('dashboard layout does not hardcode dark mode on reload', function (): void
     get(route('dashboard'))
         ->assertOk()
         ->assertSee('window.FluxFlowTheme')
-        ->assertSee('window.Flux.appearance')
+        ->assertSee('window.FluxFlowTheme.toggle()')
+        ->assertDontSee('/flux/flux.js')
         ->assertDontSee('localStorage.getItem(\'theme\')')
         ->assertDontSee('<html class="dark"');
 });

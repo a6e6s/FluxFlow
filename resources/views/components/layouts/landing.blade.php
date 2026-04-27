@@ -32,7 +32,5 @@
 </head>
 <body class="font-sans antialiased" style="font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;">
     {{ $slot }}
-
-    @fluxScripts
 </body>
 </html>

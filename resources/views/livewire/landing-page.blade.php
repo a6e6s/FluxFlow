@@ -48,10 +48,13 @@
             </div>
             <div class="flex items-center gap-4">
                 {{-- Theme Toggle --}}
-                <button type="button" x-data x-on:click="$flux.dark = ! $flux.dark"
+                <button type="button"
+                        x-data="{ dark: window.FluxFlowTheme.isDark() }"
+                        x-init="window.addEventListener('flux-theme-changed', (event) => { dark = event.detail.dark })"
+                        x-on:click="window.FluxFlowTheme.toggle()"
                         class="flex items-center justify-center size-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200">
-                    <x-lucide-sun class="size-5" x-show="$flux.dark" />
-                    <x-lucide-moon class="size-5" x-show="! $flux.dark" />
+                    <x-lucide-sun class="size-5" x-show="dark" />
+                    <x-lucide-moon class="size-5" x-show="! dark" />
                 </button>
 
                 {{-- Language Switcher --}}

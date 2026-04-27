@@ -5,12 +5,46 @@
 
 <script>
 	(() => {
+		const storageKey = 'flux.appearance';
+		const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+		const validAppearances = ['light', 'dark', 'system'];
+
+		const getAppearance = () => window.localStorage.getItem(storageKey) || 'system';
+		const isDarkAppearance = (appearance) =>
+			appearance === 'dark' || (appearance === 'system' && colorSchemeQuery.matches);
+		const applyAppearance = (appearance) => {
+			const normalizedAppearance = validAppearances.includes(appearance) ? appearance : 'system';
+
+			if (normalizedAppearance === 'system') {
+				window.localStorage.removeItem(storageKey);
+			} else {
+				window.localStorage.setItem(storageKey, normalizedAppearance);
+			}
+
+			if (window.Flux && typeof window.Flux.applyAppearance === 'function') {
+				window.Flux.applyAppearance(normalizedAppearance);
+			} else {
+				document.documentElement.classList.toggle('dark', isDarkAppearance(normalizedAppearance));
+			}
+
+			window.dispatchEvent(new CustomEvent('flux-theme-changed', {
+				detail: {
+					appearance: normalizedAppearance,
+					dark: isDarkAppearance(normalizedAppearance),
+				},
+			}));
+		};
+
 		window.FluxFlowTheme = {
-			toggle() {
-				window.Flux.dark = ! window.Flux.dark;
+			getAppearance,
+			isDark() {
+				return isDarkAppearance(getAppearance());
 			},
 			set(value) {
-				window.Flux.appearance = value === 'system' ? 'system' : value === 'dark' ? 'dark' : 'light';
+				applyAppearance(value);
+			},
+			toggle() {
+				applyAppearance(this.isDark() ? 'light' : 'dark');
 			},
 		};
 	})();
