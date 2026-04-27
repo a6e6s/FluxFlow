@@ -12,3 +12,10 @@ test('landing page highlights the latest product updates', function (): void {
         ->assertSee('Theme Persistence')
         ->assertSee('API Access');
 });
+
+test('landing page uses flux appearance instead of legacy dark mode storage', function (): void {
+    get('/')
+        ->assertOk()
+        ->assertSee('window.Flux.applyAppearance')
+        ->assertDontSee("localStorage.getItem('darkMode')");
+});

@@ -7,11 +7,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=cairo:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
+    @fluxAppearance
 </head>
 <body class="font-sans antialiased bg-slate-950" style="font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;">
     <div class="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
@@ -23,12 +19,12 @@
 
         {{-- Error Card --}}
         <div class="relative z-10 max-w-2xl w-full" x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)">
-            <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 text-center" 
-                 x-show="show" 
+            <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 text-center"
+                 x-show="show"
                  x-transition:enter="transition ease-out duration-500"
                  x-transition:enter-start="opacity-0 scale-95 translate-y-4"
                  x-transition:enter-end="opacity-100 scale-100 translate-y-0">
-                
+
                 {{-- Logo --}}
                 <div class="mb-8 opacity-50 transform rotate-2">
                     <img src="{{ asset('logo.png') }}" alt="FluxFlow" class="w-40 mx-auto">
@@ -42,7 +38,7 @@
                 <p class="text-xl text-white/70 mb-8">You don't have the clearance to enter this project. Maybe try asking for a promotion?</p>
 
                 {{-- CTA Button --}}
-                <a href="{{ auth()->check() ? route('dashboard') : route('landing') }}" 
+                <a href="{{ auth()->check() ? route('dashboard') : route('landing') }}"
                    class="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-lg transition-all hover:shadow-xl hover:shadow-blue-500/25 hover:scale-105">
                     Back to Flow
                 </a>

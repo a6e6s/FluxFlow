@@ -52,11 +52,11 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 {{-- Theme Toggle --}}
-                <button @click="window.FluxFlowTheme.toggle()"
+                <button type="button" x-data x-on:click="$flux.dark = ! $flux.dark"
                     class="flex items-center justify-center size-9 rounded-lg hover:bg-slate-100 dark:hover:bg-[#283239] text-slate-500 dark:text-slate-400 transition-colors"
                     title="Toggle theme">
-                    <x-lucide-sun class="size-5 dark:hidden" />
-                    <x-lucide-moon class="size-5 hidden dark:block" />
+                    <x-lucide-sun class="size-5" x-show="$flux.dark" />
+                    <x-lucide-moon class="size-5" x-show="! $flux.dark" />
                 </button>
 
                 {{-- Language Switcher --}}

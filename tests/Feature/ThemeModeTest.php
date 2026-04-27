@@ -20,3 +20,14 @@ test('dashboard layout does not hardcode dark mode on reload', function (): void
         ->assertDontSee('localStorage.getItem(\'theme\')')
         ->assertDontSee('<html class="dark"');
 });
+
+test('missing pages do not bootstrap legacy dark mode storage', function (): void {
+    /** @var User $user */
+    $user = User::factory()->create();
+
+    actingAs($user);
+
+    get('/missing-theme-route')
+        ->assertNotFound()
+        ->assertDontSee("localStorage.getItem('darkMode')");
+});

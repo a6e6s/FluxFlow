@@ -7,10 +7,10 @@
 	(() => {
 		window.FluxFlowTheme = {
 			toggle() {
-				window.Flux.appearance = window.Flux.dark ? 'light' : 'dark';
+				window.Flux.dark = ! window.Flux.dark;
 			},
 			set(value) {
-				window.Flux.appearance = value === 'dark' ? 'dark' : 'light';
+				window.Flux.appearance = value === 'system' ? 'system' : value === 'dark' ? 'dark' : 'light';
 			},
 		};
 	})();

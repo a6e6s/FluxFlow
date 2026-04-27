@@ -1,12 +1,4 @@
-<div class="min-h-screen bg-white dark:bg-slate-950 relative overflow-hidden transition-colors duration-300"
-     x-data="{
-         darkMode: localStorage.getItem('darkMode') === 'true',
-         toggleDark() {
-             this.darkMode = !this.darkMode;
-             localStorage.setItem('darkMode', this.darkMode);
-             document.documentElement.classList.toggle('dark', this.darkMode);
-         }
-     }">
+<div class="min-h-screen bg-white dark:bg-slate-950 relative overflow-hidden transition-colors duration-300">
     <style>
         @keyframes float-slow {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -56,10 +48,10 @@
             </div>
             <div class="flex items-center gap-4">
                 {{-- Theme Toggle --}}
-                <button @click="toggleDark()"
+                <button type="button" x-data x-on:click="$flux.dark = ! $flux.dark"
                         class="flex items-center justify-center size-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200">
-                    <x-lucide-sun class="size-5" x-show="darkMode" />
-                    <x-lucide-moon class="size-5" x-show="!darkMode" />
+                    <x-lucide-sun class="size-5" x-show="$flux.dark" />
+                    <x-lucide-moon class="size-5" x-show="! $flux.dark" />
                 </button>
 
                 {{-- Language Switcher --}}

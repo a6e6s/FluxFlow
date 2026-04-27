@@ -396,6 +396,14 @@ CACHE_STORE=file
    php artisan view:cache
    ```
 
+5. **If Flux assets 404 in production**:
+  ```bash
+  php artisan optimize:clear
+  composer install --no-interaction --prefer-dist --optimize-autoloader
+  php artisan route:cache
+  ```
+  Make sure `APP_URL` matches the deployed root URL and that the web server forwards `/flux/*` requests to Laravel.
+
 ---
 
 ## 📄 License
