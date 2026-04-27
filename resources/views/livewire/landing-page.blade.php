@@ -207,42 +207,61 @@
             </div>
 
             {{-- Additional Features Grid --}}
-            <div class="grid md:grid-cols-2 gap-8 mt-16">
-                {{-- Keyboard Shortcuts --}}
-                <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8">
-                    <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-6">
-                        <x-lucide-keyboard class="size-6 text-yellow-400" />
-                    </div>
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.shortcuts_title') }}</h3>
-                    <p class="text-slate-600 dark:text-white/70 mb-4">{{ __('landing.shortcuts_desc') }}</p>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-3">
-                            <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">N</kbd>
-                            <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_new_task') }}</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">P</kbd>
-                            <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_new_project') }}</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">⌘K</kbd>
-                            <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_search') }}</span>
-                        </div>
-                    </div>
+            <div class="mt-16">
+                <div class="mb-8 text-center">
+                    <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3">{{ __('landing.updates_title') }}</h3>
+                    <p class="text-slate-600 dark:text-white/70">{{ __('landing.updates_desc') }}</p>
                 </div>
 
-                {{-- File Management --}}
-                <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8">
-                    <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-6">
-                        <x-lucide-paperclip class="size-6 text-orange-400" />
+                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                    {{-- Compact Sidebar --}}
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                            <x-lucide-panel-left class="size-6 text-blue-500 dark:text-blue-400" />
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.update_sidebar_title') }}</h3>
+                        <p class="text-slate-600 dark:text-white/70">{{ __('landing.update_sidebar_desc') }}</p>
                     </div>
-                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.files_title') }}</h3>
-                    <p class="text-slate-600 dark:text-white/70 mb-4">{{ __('landing.files_desc') }}</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-600 dark:text-white/60">PDF</span>
-                        <span class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-600 dark:text-white/60">Images</span>
-                        <span class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-600 dark:text-white/60">Documents</span>
-                        <span class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-600 dark:text-white/60">10MB Max</span>
+
+                    {{-- Theme Persistence --}}
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6">
+                            <x-lucide-sparkles class="size-6 text-purple-500 dark:text-purple-400" />
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.update_theme_title') }}</h3>
+                        <p class="text-slate-600 dark:text-white/70">{{ __('landing.update_theme_desc') }}</p>
+                    </div>
+
+                    {{-- API Access --}}
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm">
+                        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-6">
+                            <x-lucide-key class="size-6 text-emerald-500 dark:text-emerald-400" />
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.update_api_title') }}</h3>
+                        <p class="text-slate-600 dark:text-white/70">{{ __('landing.update_api_desc') }}</p>
+                    </div>
+
+                    {{-- Keyboard Shortcuts --}}
+                    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-6">
+                            <x-lucide-keyboard class="size-6 text-yellow-400" />
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">{{ __('landing.shortcuts_title') }}</h3>
+                        <p class="text-slate-600 dark:text-white/70 mb-4">{{ __('landing.shortcuts_desc') }}</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">N</kbd>
+                                <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_new_task') }}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">P</kbd>
+                                <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_new_project') }}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <kbd class="px-2 py-1 bg-slate-200 dark:bg-white/10 rounded text-xs text-slate-700 dark:text-white/80">⌘K</kbd>
+                                <span class="text-sm text-slate-500 dark:text-white/60">{{ __('landing.shortcut_search') }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
