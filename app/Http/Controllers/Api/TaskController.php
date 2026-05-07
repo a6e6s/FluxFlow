@@ -21,6 +21,7 @@ class TaskController extends Controller
     {
         return TaskResource::collection(
             $project->tasks()
+                ->with('project:id,title')
                 ->filter($request->filters())
                 ->sort($request->sorts())
                 ->get()

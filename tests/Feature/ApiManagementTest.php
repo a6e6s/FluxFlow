@@ -54,7 +54,8 @@ test('a user can manage projects and tasks through the api', function (): void {
 
     getJson(route('api.v1.projects.tasks.index', ['project' => $projectId], false))
         ->assertOk()
-        ->assertJsonCount(1, 'data');
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.project_name', 'Website redesign');
 
     patchJson(route('api.v1.projects.tasks.update', ['project' => $projectId, 'task' => $taskId], false), [
         'status' => 'doing',
@@ -169,6 +170,9 @@ test('tasks api supports filtering and sorting', function (): void {
             'Overdue task',
             'No due task',
         ]);
+
+    expect(collect($statusSortedResponse->json('data'))->pluck('project_name')->unique()->all())
+        ->toBe([$project->title]);
 
     $dueDateSortedResponse = getJson(route('api.v1.projects.tasks.index', ['project' => $project], false).'?sort=due_date')
         ->assertOk();
