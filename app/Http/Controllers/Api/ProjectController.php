@@ -5,21 +5,24 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\IndexProjectRequest;
 use App\Http\Requests\Api\StoreProjectRequest;
 use App\Http\Requests\Api\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(IndexProjectRequest $request): AnonymousResourceCollection
     {
         return ProjectResource::collection(
-            $request->user()->projects()->ordered()->get()
+            $request->user()->projects()
+                ->filter($request->filters())
+                ->sort($request->sorts())
+                ->get()
         );
     }
 

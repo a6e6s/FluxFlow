@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\IndexTaskRequest;
 use App\Http\Requests\Api\StoreTaskRequest;
 use App\Http\Requests\Api\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
@@ -16,10 +17,13 @@ use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
-    public function index(Project $project): AnonymousResourceCollection
+    public function index(IndexTaskRequest $request, Project $project): AnonymousResourceCollection
     {
         return TaskResource::collection(
-            $project->tasks()->ordered()->get()
+            $project->tasks()
+                ->filter($request->filters())
+                ->sort($request->sorts())
+                ->get()
         );
     }
 
