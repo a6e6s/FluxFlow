@@ -49,6 +49,6 @@ test('modal and drawer shells support light mode surfaces', function (string $co
     ],
     'task details drawer' => [
         TaskDetails::class,
-        'border-l border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]',
+        'ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]',
     ],
 ]);

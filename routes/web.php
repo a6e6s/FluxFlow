@@ -3,6 +3,10 @@
 use App\Http\Controllers\InvitationController;
 use App\Livewire\KanbanBoard;
 use App\Livewire\LandingPage;
+use App\Livewire\Settings\Appearance;
+use App\Livewire\Settings\Password;
+use App\Livewire\Settings\Profile;
+use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -35,7 +39,10 @@ Route::get('kanban', KanbanBoard::class)
     ->name('kanban');
 
 Route::middleware(['auth'])->group(function () {
-    // Settings routes removed - using modal instead
+    Route::get('/settings/profile', Profile::class)->name('profile.edit');
+    Route::get('/settings/password', Password::class)->name('user-password.edit');
+    Route::get('/settings/appearance', Appearance::class)->name('appearance.edit');
+    Route::get('/settings/two-factor', TwoFactor::class)->name('two-factor.show');
 });
 
 // Task invitation acceptance link (works for guests too)
