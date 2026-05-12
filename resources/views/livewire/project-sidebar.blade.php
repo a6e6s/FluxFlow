@@ -153,6 +153,7 @@
                                 </div>
 
                                 {{-- Actions Menu --}}
+                                @if ($project->user_id === auth()->id())
                                 <div x-data="{ open: false }" class="relative" @click.stop>
                                     <button @click="open = !open"
                                         class="rounded p-1 opacity-0 transition-all hover:bg-slate-200 group-hover:opacity-100 dark:hover:bg-slate-700">
@@ -174,6 +175,7 @@
                                         </button>
                                     </div>
                                 </div>
+                                @endif
                             @endif
                         </div>
                     @empty

@@ -65,6 +65,23 @@ class Project extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
+    /**
+     * Limit projects to those visible to the given user:
+     * owner OR collaborator on at least one task in the project.
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhereHas('tasks.collaborators', fn ($c) => $c->where('users.id', $user->id));
+        });
+    }
+
+    public function isOwnedBy(User $user): bool
+    {
+        return $this->user_id === $user->id;
+    }
+
     // ─────────────────────────────────────────────────────────────
     // Scopes
     // ─────────────────────────────────────────────────────────────

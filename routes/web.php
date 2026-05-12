@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvitationController;
 use App\Livewire\KanbanBoard;
 use App\Livewire\LandingPage;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ Route::get('language/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'ar'])) {
         Session::put('locale', $locale);
     }
+
     return redirect()->back();
 })->name('language.switch');
 
@@ -35,6 +37,10 @@ Route::get('kanban', KanbanBoard::class)
 Route::middleware(['auth'])->group(function () {
     // Settings routes removed - using modal instead
 });
+
+// Task invitation acceptance link (works for guests too)
+Route::get('/invitations/{token}', [InvitationController::class, 'show'])
+    ->name('invitations.show');
 Route::post('/keep-alive', function () {
     return response()->json(['status' => 'alive']);
 })->middleware('auth');

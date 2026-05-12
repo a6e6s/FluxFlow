@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.head', ['title' => __('landing.page_title').' - FluxFlow'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- SEO Meta Tags --}}
-    <title>{{ __('landing.page_title') }} - FluxFlow</title>
     <meta name="description" content="{{ __('landing.meta_description') }}">
     <meta name="keywords" content="project management, kanban board, task management, team collaboration, productivity, workflow">
 
@@ -24,13 +22,11 @@
         html { background-color: white; }
         html.dark { background-color: #020617; }
     </style>
-
-    {{-- Styles --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @fluxAppearance
     @livewireStyles
 </head>
 <body class="font-sans antialiased" style="font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;">
     {{ $slot }}
+
+    @fluxScripts
 </body>
 </html>

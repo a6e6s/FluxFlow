@@ -12,10 +12,10 @@
 
     {{-- Slide-over Panel --}}
     <div x-show="open" x-transition:enter="transform transition ease-out duration-300"
-        x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+        x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full" x-transition:enter-end="translate-x-0"
         x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="translate-x-full" class="absolute inset-y-0 right-0 w-full max-w-xl flex">
-        <div class="relative flex w-full flex-col border-l border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]">
+        x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full" class="absolute inset-y-0 ltr:right-0 rtl:left-0 w-full max-w-xl flex">
+        <div class="relative flex w-full flex-col ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]">
             {{-- Header --}}
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
@@ -42,7 +42,8 @@
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.title') }}</label>
                         <input type="text" wire:model="title"
-                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500"
+                            @readonly(! $this->isOwner)
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
                             placeholder="{{ __('app.title_placeholder') }}" />
                     </div>
 
@@ -50,7 +51,8 @@
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.description') }}</label>
                         <textarea wire:model="description" rows="4"
-                            class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500"
+                            @readonly(! $this->canEditDescription)
+                            class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
                             placeholder="{{ __('app.description_placeholder') }}"></textarea>
                     </div>
 
@@ -63,7 +65,8 @@
                                 <x-lucide-calendar
                                     class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-500 pointer-events-none" />
                                 <input type="date" wire:model="dueDate"
-                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-slate-900 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] [color-scheme:light] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:[color-scheme:dark]" />
+                                    @readonly(! $this->isOwner)
+                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-slate-900 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] [color-scheme:light] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:[color-scheme:dark] read-only:opacity-70 read-only:cursor-not-allowed" />
                             </div>
                         </div>
 
@@ -74,7 +77,8 @@
                                 <x-lucide-gauge
                                     class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-500 pointer-events-none" />
                                 <input type="number" wire:model="effortScore" min="1" max="10"
-                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500"
+                                    @readonly(! $this->isOwner)
+                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
                                     placeholder="1-10" />
                             </div>
                         </div>
@@ -82,24 +86,13 @@
 
                     <div class="grid grid-cols-2 gap-4">
 
-                        {{-- Assignee --}}
-                        <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.assignee') }}</label>
-                            <select wire:model="assigneeId"
-                                class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white">
-                                <option value="">{{ __('app.unassigned') }}</option>
-                                @foreach ($this->teamMembers as $member)
-                                    <option value="{{ $member->id }}">{{ $member->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
                         {{-- Priority --}}
-                        <div>
+                        <div class="col-span-2">
                             <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.priority') }}</label>
                             <div class="flex gap-1.5">
-                                @foreach (['low' => ['label' => 'Low', 'color' => 'blue'], 'medium' => ['label' => 'Med', 'color' => 'amber'], 'high' => ['label' => 'High', 'color' => 'red']] as $value => $config)
+                                @foreach (['low' => ['label' => __('app.low'), 'color' => 'blue'], 'medium' => ['label' => __('app.medium'), 'color' => 'amber'], 'high' => ['label' => __('app.high'), 'color' => 'red']] as $value => $config)
                                     <button type="button" wire:click="setPriority('{{ $value }}')"
+                                        @disabled(! $this->isOwner)
                                         @class([
                                             'flex-1 px-3 py-2 rounded-lg text-xs font-bold uppercase transition-all',
                                             'bg-' .
@@ -110,6 +103,7 @@
                                             $config['color'] .
                                             '-500' => $priority->value === $value,
                                             'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-[#101a22] dark:text-slate-500 dark:hover:bg-[#283239] dark:hover:text-white' => $priority->value !== $value,
+                                            'opacity-60 cursor-not-allowed' => ! $this->isOwner,
                                         ])>
                                         {{ $config['label'] }}
                                     </button>
@@ -117,6 +111,146 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    {{-- Divider --}}
+                    <div class="border-t border-slate-200 dark:border-[#283239]"></div>
+
+                    {{-- Collaborators / Invitations --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('invitations.collaborators') }}</label>
+                            <span class="text-xs text-slate-500">{{ $this->collaborators->count() }}</span>
+                        </div>
+
+                        @if ($this->isOwner)
+                            <div class="space-y-2">
+                                <label for="invite-email" class="text-xs font-medium text-slate-500">{{ __('invitations.invite_label') }}</label>
+                                <div class="flex gap-2">
+                                    <input id="invite-email" type="email" wire:model.live.debounce.400ms="inviteEmail"
+                                        placeholder="{{ __('invitations.invite_placeholder') }}"
+                                        autocomplete="off"
+                                        class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white" />
+                                    <button type="button" wire:click="invite" wire:loading.attr="disabled" wire:target="invite"
+                                        @disabled(in_array($this->invitePreview['state'] ?? 'idle', ['idle', 'owner', 'already'], true))
+                                        class="px-4 py-2.5 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                        <span wire:loading.remove wire:target="invite">{{ __('invitations.invite_button') }}</span>
+                                        <span wire:loading wire:target="invite">{{ __('invitations.inviting') }}</span>
+                                    </button>
+                                </div>
+                                @error('inviteEmail')
+                                    <p class="text-xs text-red-500">{{ $message }}</p>
+                                @enderror
+
+                                {{-- Live Preview Card --}}
+                                @php
+                                    $preview = $this->invitePreview;
+                                    $previewBorder = match ($preview['state'] ?? 'idle') {
+                                        'existing' => 'border-emerald-500/30 bg-emerald-500/5',
+                                        'owner', 'already' => 'border-amber-500/30 bg-amber-500/5',
+                                        default => 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800',
+                                    };
+                                @endphp
+                                @if (($preview['state'] ?? 'idle') !== 'idle')
+                                    <div class="mt-2 flex items-center gap-3 rounded-lg border p-3 {{ $previewBorder }}">
+                                        @if (! empty($preview['user']))
+                                            @if ($preview['user']->profile_photo_path)
+                                                <img src="{{ asset('storage/' . $preview['user']->profile_photo_path) }}" alt="" class="size-10 rounded-full object-cover" />
+                                            @else
+                                                <div class="size-10 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-sm font-semibold">
+                                                    {{ \Illuminate\Support\Str::of($preview['user']->name)->substr(0,1)->upper() }}
+                                                </div>
+                                            @endif
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $preview['user']->name }}</p>
+                                                <p class="text-xs text-slate-500 truncate">{{ $preview['user']->email }}</p>
+                                            </div>
+                                            <span @class([
+                                                'text-xs font-medium uppercase tracking-wide',
+                                                'text-emerald-500' => $preview['state'] === 'existing',
+                                                'text-amber-500' => in_array($preview['state'], ['owner', 'already'], true),
+                                            ])>
+                                                @php
+                                                    $previewLabel = match ($preview['state']) {
+                                                        'existing' => __('invitations.preview.existing_user'),
+                                                        'owner' => __('invitations.invited_owner'),
+                                                        'already' => __('invitations.already_collaborator'),
+                                                        default => '',
+                                                    };
+                                                @endphp
+                                                {{ $previewLabel }}
+                                            </span>
+                                        @else
+                                            <div class="size-10 rounded-full bg-slate-200 dark:bg-[#283239] flex items-center justify-center">
+                                                <x-lucide-mail class="size-5 text-slate-500" />
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $inviteEmail }}</p>
+                                                <p class="text-xs text-slate-500">{{ __('invitations.preview.new_invite') }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
+                        {{-- Collaborators list --}}
+                        <div class="mt-4 space-y-2">
+                            @forelse ($this->collaborators as $collab)
+                                <div wire:key="collab-{{ $collab->id }}"
+                                    class="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5 dark:border-[#283239] dark:bg-[#1c2630]">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        @if ($collab->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $collab->profile_photo_path) }}" alt="" class="size-8 rounded-full object-cover" />
+                                        @else
+                                            <div class="size-8 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-xs font-semibold">
+                                                {{ \Illuminate\Support\Str::of($collab->name)->substr(0,1)->upper() }}
+                                            </div>
+                                        @endif
+                                        <div class="min-w-0">
+                                            <p class="text-sm text-slate-900 dark:text-white truncate">{{ $collab->name }}</p>
+                                            <p class="text-xs text-slate-500 truncate">{{ $collab->email }}</p>
+                                        </div>
+                                    </div>
+                                    @if ($this->isOwner)
+                                        <button type="button" wire:click="removeCollaborator({{ $collab->id }})"
+                                            wire:confirm="{{ __('invitations.remove') }}?"
+                                            class="p-1.5 rounded text-slate-500 hover:bg-red-50 hover:text-red-500 dark:hover:bg-[#283239]"
+                                            title="{{ __('invitations.remove') }}">
+                                            <x-lucide-x class="size-4" />
+                                        </button>
+                                    @endif
+                                </div>
+                            @empty
+                                @if (! $this->isOwner || $this->pendingInvitations->isEmpty())
+                                    <p class="text-xs text-slate-500">{{ __('invitations.no_collaborators') }}</p>
+                                @endif
+                            @endforelse
+
+                            {{-- Pending invitations --}}
+                            @if ($this->isOwner && $this->pendingInvitations->isNotEmpty())
+                                <p class="text-xs font-medium text-slate-500 mt-3">{{ __('invitations.pending_invitations') }}</p>
+                                @foreach ($this->pendingInvitations as $inv)
+                                    <div wire:key="inv-{{ $inv->id }}"
+                                        class="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-2.5">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="size-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center">
+                                                <x-lucide-mail class="size-4" />
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-sm text-slate-900 dark:text-white truncate">{{ $inv->email }}</p>
+                                                <p class="text-xs text-amber-500">{{ __('invitations.pending') }}</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" wire:click="cancelInvitation({{ $inv->id }})"
+                                            class="p-1.5 rounded text-slate-500 hover:bg-red-50 hover:text-red-500 dark:hover:bg-[#283239]"
+                                            title="{{ __('invitations.cancel_invitation') }}">
+                                            <x-lucide-x class="size-4" />
+                                        </button>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
 
                     {{-- Divider --}}
@@ -262,7 +396,8 @@
                         {{ __('app.cancel') }}
                     </button>
                     <button wire:click="save" wire:loading.attr="disabled"
-                        class="px-6 py-2.5 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2">
+                        @disabled(! $this->canEditDescription)
+                        class="px-6 py-2.5 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                         <span wire:loading.remove wire:target="save">{{ __('app.save_changes') }}</span>
                         <span wire:loading wire:target="save">
                             <svg class="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none"

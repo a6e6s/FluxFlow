@@ -29,7 +29,7 @@ class ProjectSidebar extends Component
     {
         return Project::query()
             ->select(['id', 'user_id', 'title', 'icon', 'color', 'sort_order', 'priority', 'archived_at'])
-            ->where('user_id', Auth::id())
+            ->visibleTo(Auth::user())
             ->active()
             ->ordered()
             ->withCount(['tasks', 'tasks as done_tasks_count' => function ($query) {

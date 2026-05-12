@@ -40,33 +40,47 @@ class KanbanBoard extends Component
     #[Computed]
     public function project(): ?Project
     {
-        if (!$this->projectId) {
+        if (! $this->projectId) {
             return null;
         }
 
         return Project::query()
             ->select(['id', 'user_id', 'title', 'icon', 'color', 'priority', 'archived_at'])
-            ->where('user_id', Auth::id())
+            ->visibleTo(Auth::user())
             ->find($this->projectId);
     }
 
     /**
-     * Load all tasks in ONE query, then filter in PHP
+     * Load all tasks visible to the current user in ONE query, then filter in PHP.
+     * Project owners see every task in the project; collaborators only see tasks
+     * they have been invited to.
      */
     #[Computed]
     public function tasks(): Collection
     {
-        if (!$this->projectId) {
+        if (! $this->projectId) {
             return collect();
         }
 
-        return Task::query()
+        $user = Auth::user();
+        $project = $this->project;
+
+        if (! $project) {
+            return collect();
+        }
+
+        $query = Task::query()
             ->select(['id', 'project_id', 'assigned_to', 'title', 'priority', 'status', 'sort_order', 'due_date', 'effort_score', 'updated_at'])
             ->where('project_id', $this->projectId)
             ->with(['assignee:id,name,profile_photo_path'])
             ->withCount('attachments')
-            ->ordered()
-            ->get();
+            ->ordered();
+
+        if (! $project->isOwnedBy($user)) {
+            $query->whereHas('collaborators', fn ($q) => $q->where('users.id', $user->id));
+        }
+
+        return $query->get();
     }
 
     #[Computed]
@@ -114,7 +128,7 @@ class KanbanBoard extends Component
     {
         $status = TaskStatus::tryFrom($newStatus);
 
-        if (!$status) {
+        if (! $status) {
             return;
         }
 
@@ -127,7 +141,7 @@ class KanbanBoard extends Component
                 ->update(['status' => $status]);
 
             // Bulk update sort order using CASE WHEN
-            if (!empty($orderedIds)) {
+            if (! empty($orderedIds)) {
                 $cases = [];
                 $ids = [];
                 foreach ($orderedIds as $index => $id) {
@@ -135,7 +149,7 @@ class KanbanBoard extends Component
                     $ids[] = $id;
                 }
 
-                if (!empty($cases)) {
+                if (! empty($cases)) {
                     $caseStatement = implode(' ', $cases);
                     DB::table('tasks')
                         ->whereIn('id', $ids)
@@ -176,7 +190,7 @@ class KanbanBoard extends Component
 
     public function archiveProject(): void
     {
-        if (!$this->projectId) {
+        if (! $this->projectId) {
             return;
         }
 

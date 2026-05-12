@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -75,6 +77,40 @@ class Task extends Model
     public function attachments(): MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    public function collaborators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'task_user')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(TaskInvitation::class);
+    }
+
+    public function pendingInvitations(): HasMany
+    {
+        return $this->invitations()
+            ->whereNull('accepted_at')
+            ->whereNull('declined_at')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            });
+    }
+
+    /**
+     * Limit tasks to those visible to the given user:
+     * project owner OR collaborator on the task.
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->whereHas('project', fn ($p) => $p->where('user_id', $user->id))
+                ->orWhereHas('collaborators', fn ($c) => $c->where('users.id', $user->id));
+        });
     }
 
     // ─────────────────────────────────────────────────────────────
