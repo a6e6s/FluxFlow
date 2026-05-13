@@ -39,6 +39,7 @@
                 @endif
                 @if ($this->project->isOwnedBy(auth()->user()))
                     <button wire:click="$dispatch('open-create-task-modal', { projectId: {{ $projectId }} })"
+                        data-create-task-shortcut
                         class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#1392ec] rounded-lg hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
                         <x-lucide-plus class="size-4" />
                         {{ __('app.add_task') }}

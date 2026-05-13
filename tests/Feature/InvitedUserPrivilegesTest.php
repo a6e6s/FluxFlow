@@ -79,7 +79,18 @@ it('hides add task actions for collaborators on projects they do not own', funct
     $this->actingAs($this->collaborator);
 
     Livewire::test(KanbanBoard::class, ['projectId' => $this->project->id])
-        ->assertDontSee(__('app.add_task'));
+        ->assertDontSee(__('app.add_task'))
+        ->assertDontSee('data-create-task-shortcut', false);
+});
+
+it('renders the create-task shortcut marker for owned projects', function () {
+    Task::factory()->for($this->project)->create();
+
+    $this->actingAs($this->owner);
+
+    Livewire::test(KanbanBoard::class, ['projectId' => $this->project->id])
+        ->assertSee(__('app.add_task'))
+        ->assertSee('data-create-task-shortcut', false);
 });
 
 it('hides edit and archive actions for collaborators on projects they do not own', function () {

@@ -8,6 +8,9 @@
 
 <body x-data="{
     currentProjectId: null,
+    canCreateTask() {
+        return document.querySelector('[data-create-task-shortcut]') !== null;
+    },
     init() {
         Livewire.on('project-selected', (data) => {
             this.currentProjectId = data.projectId;
@@ -16,7 +19,7 @@
     handleKeydown(e) {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
         if (e.key === 'n' || e.key === 'N') {
-            if (this.currentProjectId) {
+            if (this.currentProjectId && this.canCreateTask()) {
                 e.preventDefault();
                 this.$dispatch('open-create-task-modal', { projectId: this.currentProjectId });
             }
