@@ -72,7 +72,7 @@
                     </div>
                 @endif
                 <div x-ref="projectList" class="space-y-1" wire:ignore.self>
-                    @forelse($this->projects as $project)
+                    @forelse($this->ownedProjects as $project)
                         @php
                             $projectBorderColor = $project->color ?? '#3b82f6';
                             $projectBorderOpacity = $selectedProjectId === $project->id ? '20' : '40';
@@ -179,19 +179,151 @@
                             @endif
                         </div>
                     @empty
-                        <div class="flex flex-col items-center justify-center py-8 text-slate-500">
-                            <x-lucide-folder-plus class="size-10 mb-2 opacity-50" />
-                            @if (!$collapsed)
-                                <span class="text-sm">{{ __('app.no_projects') }}</span>
-                                <button wire:click="$dispatch('open-create-project-modal')"
-                                    class="mt-2 text-primary hover:underline">
-                                    {{ __('app.create_first_project') }}
-                                </button>
-                            @endif
-                        </div>
+                        @if ($this->sharedProjects->isEmpty())
+                            <div class="flex flex-col items-center justify-center py-8 text-slate-500">
+                                <x-lucide-folder-plus class="size-10 mb-2 opacity-50" />
+                                @if (!$collapsed)
+                                    <span class="text-sm">{{ __('app.no_projects') }}</span>
+                                    <button wire:click="$dispatch('open-create-project-modal')"
+                                        class="mt-2 text-primary hover:underline">
+                                        {{ __('app.create_first_project') }}
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
                     @endforelse
                 </div>
             </div>
+
+            {{-- Shared Projects --}}
+            @if ($this->sharedProjects->isNotEmpty())
+                @if (!$collapsed)
+                    <details class="group" @if ($this->sharedProjects->contains('id', $selectedProjectId)) open @endif>
+                        <summary
+                            class="flex cursor-pointer items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600 transition-colors select-none hover:text-primary dark:text-slate-400">
+                            <span>{{ __('app.shared_projects') }} ({{ $this->sharedProjects->count() }})</span>
+                            <x-lucide-chevron-down class="size-4 transition-transform duration-200 group-open:rotate-180" />
+                        </summary>
+                        <div class="mt-1 space-y-1">
+                            @foreach ($this->sharedProjects as $project)
+                                @php
+                                    $projectBorderColor = $project->color ?? '#3b82f6';
+                                    $projectBorderOpacity = $selectedProjectId === $project->id ? '20' : '40';
+                                @endphp
+                                <div data-project-id="{{ $project->id }}" wire:key="shared-project-{{ $project->id }}"
+                                    @click="$wire.selectProject({{ $project->id }})" title="{{ $project->title }}"
+                                    aria-label="{{ $project->title }}"
+                                    style="border-color: {{ $projectBorderColor }}{{ $projectBorderOpacity }}"
+                                    @class([
+                                        'group relative flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-all duration-200 border-slate-200 bg-slate-50 dark:border-slate-700/10 dark:bg-slate-800/80',
+                                        'bg-white shadow-md ring-1 ring-slate-200 dark:bg-slate-800/80 dark:ring-slate-700' =>
+                                            $selectedProjectId === $project->id,
+                                        'hover:bg-slate-100 hover:border-slate-300 dark:hover:bg-slate-800/50' =>
+                                            $selectedProjectId !== $project->id,
+                                        'ring-1 ring-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.12)]' =>
+                                            $project->priority->value === 'high' &&
+                                            $selectedProjectId !== $project->id,
+                                    ])>
+                                    @if ($selectedProjectId === $project->id)
+                                        <div class="absolute left-0 top-3 bottom-3 w-1 rounded-r-full"
+                                            style="background-color: {{ $project->color ?? '#3b82f6' }}"></div>
+                                    @endif
+
+                                    @if ($project->priority->value === 'high')
+                                        <div
+                                            class="absolute -top-1 -right-1 size-3 rounded-full border-2 border-white bg-red-500 animate-pulse dark:border-slate-900">
+                                        </div>
+                                    @endif
+
+                                    <div class="relative flex size-10 shrink-0 items-center justify-center">
+                                        @php
+                                            $total = $project->tasks_count ?? 0;
+                                            $done = $project->done_tasks_count ?? 0;
+                                            $percentage = $total > 0 ? round(($done / $total) * 100) : 0;
+                                        @endphp
+                                        <svg class="size-full -rotate-90" viewBox="0 0 36 36">
+                                            <path class="text-slate-300 dark:text-slate-700"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                fill="none" stroke="currentColor" stroke-width="3" />
+                                            <path style="color: {{ $project->color ?? '#3b82f6' }}"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                fill="none" stroke="currentColor"
+                                                stroke-dasharray="{{ $percentage }}, 100" stroke-width="3" />
+                                        </svg>
+                                        @if ($project->icon)
+                                            <span
+                                                class="absolute text-slate-600 dark:text-slate-300 text-lg">{{ $project->icon }}</span>
+                                        @else
+                                            <x-lucide-folder class="absolute size-4 text-slate-500 dark:text-slate-400" />
+                                        @endif
+                                    </div>
+
+                                    <div class="min-w-0 flex flex-1 flex-col">
+                                        <span
+                                            class="truncate text-sm font-medium text-slate-900 transition-colors group-hover:text-slate-950 dark:text-slate-200 dark:group-hover:text-white">
+                                            {{ $project->title }}
+                                        </span>
+                                        <span class="text-xs transition-colors"
+                                            style="color: {{ $project->color ?? '#3b82f6' }}">
+                                            {{ $percentage }}% {{ __('app.complete') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </details>
+                @else
+                    <div class="space-y-1 pt-4">
+                        @foreach ($this->sharedProjects as $project)
+                            @php
+                                $projectBorderColor = $project->color ?? '#3b82f6';
+                                $projectBorderOpacity = $selectedProjectId === $project->id ? '20' : '40';
+                            @endphp
+                            <div data-project-id="{{ $project->id }}" wire:key="shared-project-collapsed-{{ $project->id }}"
+                                @click="$wire.selectProject({{ $project->id }})" title="{{ $project->title }}"
+                                aria-label="{{ $project->title }}"
+                                style="border-color: {{ $projectBorderColor }}{{ $projectBorderOpacity }}"
+                                @class([
+                                    'group relative flex cursor-pointer items-center justify-center rounded-lg border p-2 transition-all duration-200 border-slate-200 bg-slate-50 dark:border-slate-700/10 dark:bg-slate-800/80',
+                                    'bg-white shadow-md ring-1 ring-slate-200 dark:bg-slate-800/80 dark:ring-slate-700' =>
+                                        $selectedProjectId === $project->id,
+                                    'hover:bg-slate-100 hover:border-slate-300 dark:hover:bg-slate-800/50' =>
+                                        $selectedProjectId !== $project->id,
+                                    'ring-1 ring-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.12)]' =>
+                                        $project->priority->value === 'high' &&
+                                        $selectedProjectId !== $project->id,
+                                ])>
+                                @if ($selectedProjectId === $project->id)
+                                    <div class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full"
+                                        style="background-color: {{ $project->color ?? '#3b82f6' }}"></div>
+                                @endif
+
+                                <div class="relative flex size-10 shrink-0 items-center justify-center">
+                                    @php
+                                        $total = $project->tasks_count ?? 0;
+                                        $done = $project->done_tasks_count ?? 0;
+                                        $percentage = $total > 0 ? round(($done / $total) * 100) : 0;
+                                    @endphp
+                                    <svg class="size-full -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-slate-300 dark:text-slate-700"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="currentColor" stroke-width="3" />
+                                        <path style="color: {{ $project->color ?? '#3b82f6' }}"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="currentColor"
+                                            stroke-dasharray="{{ $percentage }}, 100" stroke-width="3" />
+                                    </svg>
+                                    @if ($project->icon)
+                                        <span class="absolute text-slate-600 dark:text-slate-300 text-lg">{{ $project->icon }}</span>
+                                    @else
+                                        <x-lucide-folder class="absolute size-4 text-slate-500 dark:text-slate-400" />
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endif
 
             {{-- Archived Projects (Collapsible) --}}
             @if (!$collapsed && $this->archivedProjects->isNotEmpty())

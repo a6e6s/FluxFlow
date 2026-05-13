@@ -10,6 +10,7 @@ return [
 
     // Sidebar
     'active_projects' => 'المشاريع النشطة',
+    'shared_projects' => 'المشاريع المشتركة',
     'archived_projects' => 'المشاريع المؤرشفة',
     'no_projects' => 'لا توجد مشاريع بعد',
     'no_project' => 'بدون مشروع',

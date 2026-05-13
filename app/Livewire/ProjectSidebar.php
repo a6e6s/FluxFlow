@@ -25,11 +25,26 @@ class ProjectSidebar extends Component
     // ─────────────────────────────────────────────────────────────
 
     #[Computed(persist: true)]
-    public function projects(): Collection
+    public function ownedProjects(): Collection
+    {
+        return Project::query()
+            ->select(['id', 'user_id', 'title', 'icon', 'color', 'sort_order', 'priority', 'archived_at'])
+            ->where('user_id', Auth::id())
+            ->active()
+            ->ordered()
+            ->withCount(['tasks', 'tasks as done_tasks_count' => function ($query) {
+                $query->where('status', 'done');
+            }])
+            ->get();
+    }
+
+    #[Computed(persist: true)]
+    public function sharedProjects(): Collection
     {
         return Project::query()
             ->select(['id', 'user_id', 'title', 'icon', 'color', 'sort_order', 'priority', 'archived_at'])
             ->visibleTo(Auth::user())
+            ->where('user_id', '!=', Auth::id())
             ->active()
             ->ordered()
             ->withCount(['tasks', 'tasks as done_tasks_count' => function ($query) {
@@ -76,7 +91,7 @@ class ProjectSidebar extends Component
                 ->update(['sort_order' => $index]);
         }
 
-        unset($this->projects);
+        unset($this->ownedProjects);
     }
 
     public function archiveProject(int $projectId): void
@@ -86,7 +101,7 @@ class ProjectSidebar extends Component
             ->where('user_id', Auth::id())
             ->update(['archived_at' => now()]);
 
-        unset($this->projects, $this->archivedProjects);
+        unset($this->ownedProjects, $this->sharedProjects, $this->archivedProjects);
 
         if ($this->selectedProjectId === $projectId) {
             $this->selectedProjectId = null;
@@ -100,14 +115,14 @@ class ProjectSidebar extends Component
             ->where('user_id', Auth::id())
             ->update(['archived_at' => null]);
 
-        unset($this->projects, $this->archivedProjects);
+        unset($this->ownedProjects, $this->sharedProjects, $this->archivedProjects);
     }
 
     #[On('task-moved')]
     #[On('project-archived')]
     public function refreshProjects(): void
     {
-        unset($this->projects, $this->archivedProjects);
+        unset($this->ownedProjects, $this->sharedProjects, $this->archivedProjects);
         $this->selectedProjectId = null;
     }
 
@@ -115,20 +130,20 @@ class ProjectSidebar extends Component
     #[On('task-deleted')]
     public function refreshProjectCounts(): void
     {
-        unset($this->projects, $this->archivedProjects);
+        unset($this->ownedProjects, $this->sharedProjects, $this->archivedProjects);
     }
 
     #[On('project-created')]
     public function onProjectCreated(): void
     {
-        unset($this->projects);
+        unset($this->ownedProjects, $this->sharedProjects);
     }
 
     #[On('project-updated')]
     #[On('project-deleted')]
     public function onProjectUpdated(): void
     {
-        unset($this->projects, $this->archivedProjects);
+        unset($this->ownedProjects, $this->sharedProjects, $this->archivedProjects);
     }
 
     // ─────────────────────────────────────────────────────────────
