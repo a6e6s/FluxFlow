@@ -111,6 +111,13 @@ class ProjectSidebar extends Component
         $this->selectedProjectId = null;
     }
 
+    #[On('task-created')]
+    #[On('task-deleted')]
+    public function refreshProjectCounts(): void
+    {
+        unset($this->projects, $this->archivedProjects);
+    }
+
     #[On('project-created')]
     public function onProjectCreated(): void
     {

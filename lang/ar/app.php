@@ -62,6 +62,7 @@ return [
     'drop_files' => 'اسحب الملفات هنا أو انقر للرفع',
     'max_file_size' => 'الحد الأقصى 10 ميجابايت لكل ملف',
     'save_changes' => 'حفظ التغييرات',
+    'delete_task' => 'حذف المهمة',
     'close' => 'إغلاق',
 
     // Create Project Modal
@@ -100,6 +101,7 @@ return [
     // Confirmations
     'confirm_archive' => 'هل أنت متأكد من أرشفة هذا المشروع؟ سيتم نقله إلى قسم المؤرشف.',
     'confirm_delete' => 'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.',
+    'confirm_delete_task' => 'هل أنت متأكد من حذف هذه المهمة؟ لا يمكن التراجع عن هذا الإجراء.',
     'confirm_delete_file' => 'هل أنت متأكد من حذف هذا الملف؟',
 
     // Language
@@ -119,4 +121,6 @@ return [
     'upload_files' => 'رفع :count ملف(ات)',
     'loading_task' => 'جاري تحميل المهمة...',
     'saving' => 'جاري الحفظ...',
+    'deleting' => 'جاري الحذف...',
+    'task_deleted' => 'تم حذف المهمة بنجاح.',
 ];

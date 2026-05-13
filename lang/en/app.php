@@ -62,6 +62,7 @@ return [
     'drop_files' => 'Drop files here or click to upload',
     'max_file_size' => 'Max 10MB per file',
     'save_changes' => 'Save Changes',
+    'delete_task' => 'Delete Task',
     'close' => 'Close',
 
     // Create Project Modal
@@ -100,6 +101,7 @@ return [
     // Confirmations
     'confirm_archive' => 'Are you sure you want to archive this project? It will be moved to the archived section.',
     'confirm_delete' => 'Are you sure? This action cannot be undone.',
+    'confirm_delete_task' => 'Are you sure you want to delete this task? This action cannot be undone.',
     'confirm_delete_file' => 'Are you sure you want to delete this file?',
 
     // Language
@@ -119,4 +121,6 @@ return [
     'upload_files' => 'Upload :count file(s)',
     'loading_task' => 'Loading task...',
     'saving' => 'Saving...',
+    'deleting' => 'Deleting...',
+    'task_deleted' => 'Task deleted successfully.',
 ];

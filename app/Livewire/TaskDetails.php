@@ -213,6 +213,30 @@ class TaskDetails extends Component
         $this->dispatch('notify', message: __('app.save_changes'), type: 'success');
     }
 
+    public function deleteTask(): void
+    {
+        if (! $this->task) {
+            return;
+        }
+
+        $task = $this->task->loadMissing('attachments');
+
+        $this->authorize('delete', $task);
+
+        foreach ($task->attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->file_path);
+            $attachment->delete();
+        }
+
+        $task->delete();
+
+        $this->dispatch('task-deleted');
+        $this->dispatch('task-updated');
+        $this->dispatch('notify', message: __('app.task_deleted'), type: 'success');
+
+        $this->close();
+    }
+
     public function invite(InviteUserToTask $action): void
     {
         if (! $this->task) {

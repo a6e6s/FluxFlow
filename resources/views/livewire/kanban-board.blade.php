@@ -19,27 +19,31 @@
                 </h1>
             </div>
             <div class="flex items-center gap-3">
-                {{-- Archive Project Button --}}
-                @unless ($this->project->archived_at)
-                    <button wire:click="archiveProject" wire:confirm="{{ __('app.confirm_archive') }}"
-                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-amber-500/10 dark:hover:bg-amber-500/10 transition-colors"
-                        title="{{ __('app.archive') }}">
-                        <x-lucide-archive class="size-4" />
-                        {{ __('app.archive') }}
-                    </button>
-                @endunless
+                @if ($this->project->isOwnedBy(auth()->user()))
+                    {{-- Archive Project Button --}}
+                    @unless ($this->project->archived_at)
+                        <button wire:click="archiveProject" wire:confirm="{{ __('app.confirm_archive') }}"
+                            class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-amber-500/10 dark:hover:bg-amber-500/10 transition-colors"
+                            title="{{ __('app.archive') }}">
+                            <x-lucide-archive class="size-4" />
+                            {{ __('app.archive') }}
+                        </button>
+                    @endunless
 
-                <button @click="$dispatch('open-edit-project-modal', { projectId: {{ $projectId }} })"
-                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-slate-200 dark:hover:bg-[#323d46] transition-colors"
-                    title="{{ __('app.edit') }}">
-                    <x-lucide-pencil class="size-4" />
-                    {{ __('app.edit') }}
-                </button>
-                <button wire:click="$dispatch('open-create-task-modal', { projectId: {{ $projectId }} })"
-                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#1392ec] rounded-lg hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
-                    <x-lucide-plus class="size-4" />
-                    {{ __('app.add_task') }}
-                </button>
+                    <button @click="$dispatch('open-edit-project-modal', { projectId: {{ $projectId }} })"
+                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#283239] rounded-lg hover:bg-slate-200 dark:hover:bg-[#323d46] transition-colors"
+                        title="{{ __('app.edit') }}">
+                        <x-lucide-pencil class="size-4" />
+                        {{ __('app.edit') }}
+                    </button>
+                @endif
+                @if ($this->project->isOwnedBy(auth()->user()))
+                    <button wire:click="$dispatch('open-create-task-modal', { projectId: {{ $projectId }} })"
+                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#1392ec] rounded-lg hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                        <x-lucide-plus class="size-4" />
+                        {{ __('app.add_task') }}
+                    </button>
+                @endif
             </div>
         </div>
 
