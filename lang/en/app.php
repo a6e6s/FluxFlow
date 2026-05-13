@@ -63,6 +63,7 @@ return [
     'max_file_size' => 'Max 10MB per file',
     'save_changes' => 'Save Changes',
     'delete_task' => 'Delete Task',
+    'delete_prompt' => 'Delete?',
     'close' => 'Close',
 
     // Create Project Modal

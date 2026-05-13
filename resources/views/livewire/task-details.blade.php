@@ -1,8 +1,10 @@
 {{-- Task Details Slide-over --}}
 <div x-data="{
     open: $wire.entangle('open'),
-    dragging: false
+    dragging: false,
+    confirmDelete: false
 }" x-show="open" x-cloak @keydown.escape.window="if (open) $wire.close()"
+    x-effect="if (!open) confirmDelete = false"
     class="fixed inset-0 z-50 overflow-hidden">
     {{-- Backdrop --}}
     <div x-show="open" x-transition:enter="transition-opacity ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -393,16 +395,30 @@
                 <div class="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-[#283239] dark:bg-[#0d1419]">
                     <div>
                         @if ($this->isOwner)
-                            <button wire:click="deleteTask" wire:confirm="{{ __('app.confirm_delete_task') }}"
-                                wire:loading.attr="disabled" wire:target="deleteTask"
-                                class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <x-lucide-trash-2 class="size-4" />
-                                <span wire:loading.remove wire:target="deleteTask">{{ __('app.delete_task') }}</span>
-                                <span wire:loading wire:target="deleteTask">{{ __('app.deleting') }}</span>
-                            </button>
+                            <div x-show="!confirmDelete">
+                                <button type="button" @click="confirmDelete = true"
+                                    class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
+                                    <x-lucide-trash-2 class="size-4" />
+                                    {{ __('app.delete_task') }}
+                                </button>
+                            </div>
+
+                            <div x-show="confirmDelete" x-cloak class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-red-500 dark:text-red-400">{{ __('app.delete_prompt') }}</span>
+                                <button type="button" wire:click="deleteTask" wire:loading.attr="disabled"
+                                    wire:target="deleteTask"
+                                    class="rounded-lg bg-red-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span wire:loading.remove wire:target="deleteTask">{{ __('app.delete') }}</span>
+                                    <span wire:loading wire:target="deleteTask">{{ __('app.deleting') }}</span>
+                                </button>
+                                <button type="button" @click="confirmDelete = false"
+                                    class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+                                    {{ __('app.cancel') }}
+                                </button>
+                            </div>
                         @endif
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div x-show="!confirmDelete" class="flex items-center gap-3">
                         <button wire:click="close"
                             class="px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
                             {{ __('app.cancel') }}

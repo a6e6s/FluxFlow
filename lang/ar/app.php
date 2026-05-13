@@ -63,6 +63,7 @@ return [
     'max_file_size' => 'الحد الأقصى 10 ميجابايت لكل ملف',
     'save_changes' => 'حفظ التغييرات',
     'delete_task' => 'حذف المهمة',
+    'delete_prompt' => 'حذف؟',
     'close' => 'إغلاق',
 
     // Create Project Modal
