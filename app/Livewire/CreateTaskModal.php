@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Enums\Priority;
-use App\Enums\TaskStatus;
+use App\Actions\Tasks\SanitizeTaskDescription;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Contracts\View\View;
@@ -13,19 +12,30 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class CreateTaskModal extends Component
 {
+    use WithFileUploads;
+
     public bool $open = false;
+
     public ?int $projectId = null;
 
     #[Validate('required|string|min:2|max:255')]
     public string $title = '';
 
+    #[Validate(['files.*' => 'file|max:10240'])]
+    public array $files = [];
+
     public string $description = '';
+
     public string $priority = 'medium';
+
     public string $status = 'todo';
+
     public ?string $dueDate = null;
+
     public ?int $effortScore = null;
 
     // ─────────────────────────────────────────────────────────────
@@ -35,16 +45,16 @@ class CreateTaskModal extends Component
     #[On('open-create-task-modal')]
     public function openModal(?int $projectId = null): void
     {
-        $this->reset(['title', 'description', 'priority', 'status', 'dueDate', 'effortScore']);
+        $this->reset(['title', 'description', 'priority', 'status', 'dueDate', 'effortScore', 'files']);
         $this->projectId = $projectId;
         $this->open = true;
     }
 
-    public function create(): void
+    public function create(SanitizeTaskDescription $sanitizeTaskDescription): void
     {
         $this->validate();
 
-        if (!$this->projectId) {
+        if (! $this->projectId) {
             return;
         }
 
@@ -53,7 +63,7 @@ class CreateTaskModal extends Component
             ->where('user_id', Auth::id())
             ->first();
 
-        if (!$project) {
+        if (! $project) {
             return;
         }
 
@@ -61,16 +71,26 @@ class CreateTaskModal extends Component
             ->where('status', $this->status)
             ->max('sort_order') ?? 0;
 
-        Task::create([
+        $task = Task::create([
             'project_id' => $this->projectId,
             'title' => $this->title,
-            'description' => $this->description ?: null,
+            'description' => $sanitizeTaskDescription->handle($this->description) ?: null,
             'priority' => $this->priority,
             'status' => $this->status,
             'due_date' => $this->dueDate ?: null,
             'effort_score' => $this->effortScore,
             'sort_order' => $maxOrder + 1,
         ]);
+
+        foreach ($this->files as $file) {
+            $path = $file->store('attachments/'.$project->id, 'public');
+
+            $task->attachments()->create([
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+            ]);
+        }
 
         $this->close();
 
@@ -81,6 +101,12 @@ class CreateTaskModal extends Component
     public function close(): void
     {
         $this->open = false;
+        $this->files = [];
+    }
+
+    public function removeTempFile(int $index): void
+    {
+        array_splice($this->files, $index, 1);
     }
 
     // ─────────────────────────────────────────────────────────────

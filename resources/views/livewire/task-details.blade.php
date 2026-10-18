@@ -91,10 +91,10 @@
 
                     {{-- Description --}}
                     <div>
-                        <div class="mb-1 flex items-center justify-between">
+                        {{-- <div class="mb-1 flex items-center justify-between">
                             <label class="text-xs font-medium text-slate-600 dark:text-slate-400">{{ __('app.description') }}</label>
                             <span class="text-[10px] text-slate-500">Rich text</span>
-                        </div>
+                        </div> --}}
                         <div class="task-description-editor overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors focus-within:border-[#1392ec] focus-within:ring-1 focus-within:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630]">
                             <div wire:ignore x-init="mountDescriptionEditor($el)"
                                 x-effect="refreshDescriptionEditor()"
