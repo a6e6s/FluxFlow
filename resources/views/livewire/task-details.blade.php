@@ -1,11 +1,50 @@
 {{-- Task Details Slide-over --}}
 <div x-data="{
     open: $wire.entangle('open'),
+    description: $wire.entangle('description'),
     dragging: false,
-    confirmDelete: false
+    confirmDelete: false,
+    descriptionEditor: null,
+    mountDescriptionEditor(element) {
+        if (!window.Quill) {
+            window.addEventListener('quill:ready', () => this.mountDescriptionEditor(element), { once: true });
+
+            return;
+        }
+
+        if (this.descriptionEditor?.root.closest('.task-description-editor') === element) {
+            return;
+        }
+
+        this.descriptionEditor = window.Alpine.raw(new window.Quill(element, {
+            theme: 'snow',
+            placeholder: element.dataset.placeholder,
+            readOnly: {{ $this->canEditDescription ? 'false' : 'true' }},
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ header: [1, 2, false] }],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['blockquote', 'link'],
+                    ['clean'],
+                ],
+            },
+        }));
+
+        this.descriptionEditor.root.innerHTML = this.description || '';
+        this.descriptionEditor.on('text-change', (_delta, _oldDelta, source) => {
+            if (source === 'user') {
+                this.description = this.descriptionEditor.root.innerHTML;
+            }
+        });
+    },
+    refreshDescriptionEditor() {
+        if (this.descriptionEditor && this.descriptionEditor.root.innerHTML !== (this.description || '')) {
+            this.descriptionEditor.root.innerHTML = this.description || '';
+        }
+    }
 }" x-show="open" x-cloak @keydown.escape.window="if (open) $wire.close()"
-    x-effect="if (!open) confirmDelete = false"
-    class="fixed inset-0 z-50 overflow-hidden">
+    x-effect="if (!open) confirmDelete = false" class="fixed inset-0 z-50 overflow-hidden">
     {{-- Backdrop --}}
     <div x-show="open" x-transition:enter="transition-opacity ease-out duration-300" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-in duration-200"
@@ -16,8 +55,10 @@
     <div x-show="open" x-transition:enter="transform transition ease-out duration-300"
         x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full" x-transition:enter-end="translate-x-0"
         x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full" class="absolute inset-y-0 ltr:right-0 rtl:left-0 w-full max-w-xl flex">
-        <div class="relative flex w-full flex-col ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]">
+        x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full"
+        class="absolute inset-y-0 ltr:right-0 rtl:left-0 w-full max-w-xl flex">
+        <div
+            class="relative flex w-full flex-col ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]">
             {{-- Header --}}
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
@@ -25,7 +66,8 @@
                         <x-lucide-clipboard-list class="size-5 text-[#1392ec]" />
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('app.task_details') }}</h2>
+                        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ __('app.task_details') }}
+                        </h2>
                         @if ($this->task)
                             <p class="text-xs text-slate-500 dark:text-slate-500">{{ $this->task->project->title }}</p>
                         @endif
@@ -39,64 +81,55 @@
 
             @if ($this->task)
                 {{-- Content --}}
-                <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                     {{-- Title --}}
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.title') }}</label>
-                        <input type="text" wire:model="title"
-                            @readonly(! $this->isOwner)
-                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
+                        <input type="text" wire:model="title" @readonly(!$this->isOwner)
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
                             placeholder="{{ __('app.title_placeholder') }}" />
                     </div>
 
                     {{-- Description --}}
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.description') }}</label>
-                        <textarea wire:model="description" rows="4"
-                            @readonly(! $this->canEditDescription)
-                            class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
-                            placeholder="{{ __('app.description_placeholder') }}"></textarea>
+                        <div class="mb-1 flex items-center justify-between">
+                            <label class="text-xs font-medium text-slate-600 dark:text-slate-400">{{ __('app.description') }}</label>
+                            <span class="text-[10px] text-slate-500">Rich text</span>
+                        </div>
+                        <div wire:ignore x-init="mountDescriptionEditor($el)"
+                            x-effect="refreshDescriptionEditor()"
+                            data-placeholder="{{ __('app.description_placeholder') }}"
+                            class="task-description-editor overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors focus-within:border-[#1392ec] focus-within:ring-1 focus-within:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630]"></div>
                     </div>
 
-                    {{-- Due Date & Assignee Row --}}
-                    <div class="grid grid-cols-2 gap-4">
+                    {{-- Compact Task Metadata --}}
+                    <div class="grid grid-cols-3 items-end gap-2">
                         {{-- Due Date --}}
                         <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.due_date') }}</label>
-                            <div class="relative">
-                                <x-lucide-calendar
-                                    class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-500 pointer-events-none" />
-                                <input type="date" wire:model="dueDate"
-                                    @readonly(! $this->isOwner)
-                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-slate-900 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] [color-scheme:light] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:[color-scheme:dark] read-only:opacity-70 read-only:cursor-not-allowed" />
-                            </div>
+                            <label
+                                class="mb-1 block truncate text-[10px] font-medium text-slate-600 dark:text-slate-400">{{ __('app.due_date') }}</label>
+                            <input type="date" wire:model="dueDate" @readonly(!$this->isOwner)
+                                title="{{ __('app.due_date') }}"
+                                class="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-xs text-slate-900 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] [color-scheme:light] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:[color-scheme:dark] read-only:opacity-70 read-only:cursor-not-allowed" />
                         </div>
 
                         {{-- Effort Score --}}
                         <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.effort_score') }}</label>
-                            <div class="relative">
-                                <x-lucide-gauge
-                                    class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-500 pointer-events-none" />
-                                <input type="number" wire:model="effortScore" min="1" max="10"
-                                    @readonly(! $this->isOwner)
-                                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed"
-                                    placeholder="1-10" />
-                            </div>
+                            <label
+                                class="mb-1 block truncate text-[10px] font-medium text-slate-600 dark:text-slate-400">{{ __('app.effort_score') }}</label>
+                            <input type="number" wire:model="effortScore" min="1" max="10"
+                                @readonly(!$this->isOwner) placeholder="1-10" title="{{ __('app.effort_score') }}"
+                                class="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white dark:placeholder-slate-500 read-only:opacity-70 read-only:cursor-not-allowed" />
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
 
                         {{-- Priority --}}
-                        <div class="col-span-2">
-                            <label class="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('app.priority') }}</label>
-                            <div class="flex gap-1.5">
+                        <div class="min-w-0">
+                            <label
+                                class="mb-1 block truncate text-[10px] font-medium text-slate-600 dark:text-slate-400">{{ __('app.priority') }}</label>
+                            <div class="flex min-w-0 gap-1">
                                 @foreach (['low' => ['label' => __('app.low'), 'color' => 'blue'], 'medium' => ['label' => __('app.medium'), 'color' => 'amber'], 'high' => ['label' => __('app.high'), 'color' => 'red']] as $value => $config)
                                     <button type="button" wire:click="setPriority('{{ $value }}')"
-                                        @disabled(! $this->isOwner)
-                                        @class([
-                                            'flex-1 px-3 py-2 rounded-lg text-xs font-bold uppercase transition-all',
+                                        @disabled(!$this->isOwner) @class([
+                                            'min-w-0 flex-1 rounded-lg px-1 py-2 text-[9px] font-bold uppercase transition-all',
                                             'bg-' .
                                             $config['color'] .
                                             '-500/20 text-' .
@@ -104,15 +137,15 @@
                                             '-400 ring-1 ring-' .
                                             $config['color'] .
                                             '-500' => $priority->value === $value,
-                                            'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-[#101a22] dark:text-slate-500 dark:hover:bg-[#283239] dark:hover:text-white' => $priority->value !== $value,
-                                            'opacity-60 cursor-not-allowed' => ! $this->isOwner,
+                                            'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-[#101a22] dark:text-slate-500 dark:hover:bg-[#283239] dark:hover:text-white' =>
+                                                $priority->value !== $value,
+                                            'opacity-60 cursor-not-allowed' => !$this->isOwner,
                                         ])>
                                         {{ $config['label'] }}
                                     </button>
                                 @endforeach
                             </div>
                         </div>
-
                     </div>
 
                     {{-- Divider --}}
@@ -120,23 +153,25 @@
 
                     {{-- Collaborators / Invitations --}}
                     <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <label class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('invitations.collaborators') }}</label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label
+                                class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ __('invitations.collaborators') }}</label>
                             <span class="text-xs text-slate-500">{{ $this->collaborators->count() }}</span>
                         </div>
 
                         @if ($this->isOwner)
-                            <div class="space-y-2">
-                                <label for="invite-email" class="text-xs font-medium text-slate-500">{{ __('invitations.invite_label') }}</label>
+                            <div class="space-y-1.5">
+                                <label for="invite-email"
+                                    class="text-xs font-medium text-slate-500">{{ __('invitations.invite_label') }}</label>
                                 <div class="flex gap-2">
                                     <input id="invite-email" type="email" wire:model.live.debounce.400ms="inviteEmail"
-                                        placeholder="{{ __('invitations.invite_placeholder') }}"
-                                        autocomplete="off"
-                                        class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white" />
-                                    <button type="button" wire:click="invite" wire:loading.attr="disabled" wire:target="invite"
-                                        @disabled(in_array($this->invitePreview['state'] ?? 'idle', ['idle', 'owner', 'already'], true))
-                                        class="px-4 py-2.5 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                                        <span wire:loading.remove wire:target="invite">{{ __('invitations.invite_button') }}</span>
+                                        placeholder="{{ __('invitations.invite_placeholder') }}" autocomplete="off"
+                                        class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 transition-colors focus:border-[#1392ec] focus:ring-1 focus:ring-[#1392ec] dark:border-[#283239] dark:bg-[#1c2630] dark:text-white" />
+                                    <button type="button" wire:click="invite" wire:loading.attr="disabled"
+                                        wire:target="invite" @disabled(in_array($this->invitePreview['state'] ?? 'idle', ['idle', 'owner', 'already'], true))
+                                        class="px-3 py-2 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                        <span wire:loading.remove
+                                            wire:target="invite">{{ __('invitations.invite_button') }}</span>
                                         <span wire:loading wire:target="invite">{{ __('invitations.inviting') }}</span>
                                     </button>
                                 </div>
@@ -150,22 +185,28 @@
                                     $previewBorder = match ($preview['state'] ?? 'idle') {
                                         'existing' => 'border-emerald-500/30 bg-emerald-500/5',
                                         'owner', 'already' => 'border-amber-500/30 bg-amber-500/5',
-                                        default => 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800',
+                                        default
+                                            => 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800',
                                     };
                                 @endphp
                                 @if (($preview['state'] ?? 'idle') !== 'idle')
-                                    <div class="mt-2 flex items-center gap-3 rounded-lg border p-3 {{ $previewBorder }}">
-                                        @if (! empty($preview['user']))
+                                    <div
+                                        class="mt-2 flex items-center gap-3 rounded-lg border p-3 {{ $previewBorder }}">
+                                        @if (!empty($preview['user']))
                                             @if ($preview['user']->profile_photo_path)
-                                                <img src="{{ asset('storage/' . $preview['user']->profile_photo_path) }}" alt="" class="size-10 rounded-full object-cover" />
+                                                <img src="{{ asset('storage/' . $preview['user']->profile_photo_path) }}"
+                                                    alt="" class="size-10 rounded-full object-cover" />
                                             @else
-                                                <div class="size-10 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-sm font-semibold">
-                                                    {{ \Illuminate\Support\Str::of($preview['user']->name)->substr(0,1)->upper() }}
+                                                <div
+                                                    class="size-10 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-sm font-semibold">
+                                                    {{ \Illuminate\Support\Str::of($preview['user']->name)->substr(0, 1)->upper() }}
                                                 </div>
                                             @endif
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $preview['user']->name }}</p>
-                                                <p class="text-xs text-slate-500 truncate">{{ $preview['user']->email }}</p>
+                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                                    {{ $preview['user']->name }}</p>
+                                                <p class="text-xs text-slate-500 truncate">
+                                                    {{ $preview['user']->email }}</p>
                                             </div>
                                             <span @class([
                                                 'text-xs font-medium uppercase tracking-wide',
@@ -183,12 +224,15 @@
                                                 {{ $previewLabel }}
                                             </span>
                                         @else
-                                            <div class="size-10 rounded-full bg-slate-200 dark:bg-[#283239] flex items-center justify-center">
+                                            <div
+                                                class="size-10 rounded-full bg-slate-200 dark:bg-[#283239] flex items-center justify-center">
                                                 <x-lucide-mail class="size-5 text-slate-500" />
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $inviteEmail }}</p>
-                                                <p class="text-xs text-slate-500">{{ __('invitations.preview.new_invite') }}</p>
+                                                <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                                    {{ $inviteEmail }}</p>
+                                                <p class="text-xs text-slate-500">
+                                                    {{ __('invitations.preview.new_invite') }}</p>
                                             </div>
                                         @endif
                                     </div>
@@ -197,20 +241,23 @@
                         @endif
 
                         {{-- Collaborators list --}}
-                        <div class="mt-4 space-y-2">
+                        <div class="mt-3 space-y-1.5">
                             @forelse ($this->collaborators as $collab)
                                 <div wire:key="collab-{{ $collab->id }}"
                                     class="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5 dark:border-[#283239] dark:bg-[#1c2630]">
                                     <div class="flex items-center gap-3 min-w-0">
                                         @if ($collab->profile_photo_path)
-                                            <img src="{{ asset('storage/' . $collab->profile_photo_path) }}" alt="" class="size-8 rounded-full object-cover" />
+                                            <img src="{{ asset('storage/' . $collab->profile_photo_path) }}"
+                                                alt="" class="size-8 rounded-full object-cover" />
                                         @else
-                                            <div class="size-8 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-xs font-semibold">
-                                                {{ \Illuminate\Support\Str::of($collab->name)->substr(0,1)->upper() }}
+                                            <div
+                                                class="size-8 rounded-full bg-[#1392ec]/15 text-[#1392ec] flex items-center justify-center text-xs font-semibold">
+                                                {{ \Illuminate\Support\Str::of($collab->name)->substr(0, 1)->upper() }}
                                             </div>
                                         @endif
                                         <div class="min-w-0">
-                                            <p class="text-sm text-slate-900 dark:text-white truncate">{{ $collab->name }}</p>
+                                            <p class="text-sm text-slate-900 dark:text-white truncate">
+                                                {{ $collab->name }}</p>
                                             <p class="text-xs text-slate-500 truncate">{{ $collab->email }}</p>
                                         </div>
                                     </div>
@@ -224,23 +271,26 @@
                                     @endif
                                 </div>
                             @empty
-                                @if (! $this->isOwner || $this->pendingInvitations->isEmpty())
+                                @if (!$this->isOwner || $this->pendingInvitations->isEmpty())
                                     <p class="text-xs text-slate-500">{{ __('invitations.no_collaborators') }}</p>
                                 @endif
                             @endforelse
 
                             {{-- Pending invitations --}}
                             @if ($this->isOwner && $this->pendingInvitations->isNotEmpty())
-                                <p class="text-xs font-medium text-slate-500 mt-3">{{ __('invitations.pending_invitations') }}</p>
+                                <p class="text-xs font-medium text-slate-500 mt-3">
+                                    {{ __('invitations.pending_invitations') }}</p>
                                 @foreach ($this->pendingInvitations as $inv)
                                     <div wire:key="inv-{{ $inv->id }}"
                                         class="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-2.5">
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <div class="size-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center">
+                                            <div
+                                                class="size-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center">
                                                 <x-lucide-mail class="size-4" />
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-sm text-slate-900 dark:text-white truncate">{{ $inv->email }}</p>
+                                                <p class="text-sm text-slate-900 dark:text-white truncate">
+                                                    {{ $inv->email }}</p>
                                                 <p class="text-xs text-amber-500">{{ __('invitations.pending') }}</p>
                                             </div>
                                         </div>
@@ -260,9 +310,10 @@
 
                     {{-- File Attachments Section --}}
                     <div>
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between mb-1.5">
                             <label class="text-sm font-medium text-slate-400">{{ __('app.attachments') }}</label>
-                            <span class="text-xs text-slate-500">{{ __('app.file_count', ['count' => $this->attachments->count()]) }}</span>
+                            <span
+                                class="text-xs text-slate-500">{{ __('app.file_count', ['count' => $this->attachments->count()]) }}</span>
                         </div>
 
                         {{-- File Dropzone --}}
@@ -272,14 +323,14 @@
                                 $wire.uploadMultiple('files', $event.dataTransfer.files);
                             "
                             :class="dragging ? 'border-[#1392ec] bg-[#1392ec]/5' : 'border-slate-200 dark:border-[#283239]'"
-                            class="relative rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200 hover:border-[#1392ec]/50 bg-slate-50 dark:bg-[#101a22]/50">
+                            class="relative rounded-lg border border-dashed p-2.5 text-center transition-all duration-200 hover:border-[#1392ec]/50 bg-slate-50 dark:bg-[#101a22]/50">
                             <input type="file" wire:model="files" multiple
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                             <div class="flex flex-col items-center">
-                                <div class="p-3 rounded-full mb-3 bg-white dark:bg-[#1c2630]">
-                                    <x-lucide-cloud-upload class="size-6 text-slate-400" />
+                                <div class="p-2 rounded-full mb-1.5 bg-white dark:bg-[#1c2630]">
+                                    <x-lucide-cloud-upload class="size-5 text-slate-400" />
                                 </div>
-                                <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mb-0.5">
                                     <span class="text-[#1392ec] font-medium">{{ __('app.click_to_upload') }}</span>
                                     {{ __('app.or_drag_drop') }}
                                 </p>
@@ -307,7 +358,8 @@
                             <div class="mt-4 space-y-2">
                                 <p class="text-xs text-slate-500 font-medium">{{ __('app.ready_to_upload') }}</p>
                                 @foreach ($files as $index => $file)
-                                    <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 dark:border-[#283239] dark:bg-[#1c2630]">
+                                    <div
+                                        class="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 dark:border-[#283239] dark:bg-[#1c2630]">
                                         <div class="flex items-center gap-3">
                                             <div class="p-2 bg-amber-500/10 rounded-lg">
                                                 <x-lucide-file class="size-4 text-amber-500" />
@@ -340,8 +392,7 @@
                                         class="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-colors hover:border-[#1392ec]/50 dark:border-[#283239] dark:bg-[#1c2630]">
                                         @if ($attachment->isImage())
                                             {{-- Image Thumbnail --}}
-                                            <a href="{{ $attachment->url }}" target="_blank"
-                                                class="aspect-video">
+                                            <a href="{{ $attachment->url }}" target="_blank" class="aspect-video">
                                                 <img src="{{ $attachment->url }}" alt="{{ $attachment->file_name }}"
                                                     class="w-full h-full object-cover" />
                                             </a>
@@ -392,7 +443,8 @@
                 </div>
 
                 {{-- Footer --}}
-                <div class="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-[#283239] dark:bg-[#0d1419]">
+                <div
+                    class="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-[#283239] dark:bg-[#0d1419]">
                     <div>
                         @if ($this->isOwner)
                             <div x-show="!confirmDelete">
@@ -404,7 +456,8 @@
                             </div>
 
                             <div x-show="confirmDelete" x-cloak class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-red-500 dark:text-red-400">{{ __('app.delete_prompt') }}</span>
+                                <span
+                                    class="text-sm font-medium text-red-500 dark:text-red-400">{{ __('app.delete_prompt') }}</span>
                                 <button type="button" wire:click="deleteTask" wire:loading.attr="disabled"
                                     wire:target="deleteTask"
                                     class="rounded-lg bg-red-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -423,8 +476,7 @@
                             class="px-4 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
                             {{ __('app.cancel') }}
                         </button>
-                        <button wire:click="save" wire:loading.attr="disabled"
-                            @disabled(! $this->canEditDescription)
+                        <button wire:click="save" wire:loading.attr="disabled" @disabled(!$this->canEditDescription)
                             class="px-6 py-2.5 bg-[#1392ec] hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                             <span wire:loading.remove wire:target="save">{{ __('app.save_changes') }}</span>
                             <span wire:loading wire:target="save">

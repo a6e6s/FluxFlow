@@ -1,6 +1,9 @@
 // Import SortableJS and make it globally available for Alpine.js
 import Sortable from 'sortablejs';
+import Quill from 'quill';
 window.Sortable = Sortable;
+window.Quill = Quill;
+window.dispatchEvent(new Event('quill:ready'));
 
 // Keep session alive by pinging server every 10 minutes
 setInterval(() => {

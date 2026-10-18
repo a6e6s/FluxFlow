@@ -46,6 +46,28 @@ it('lets collaborators update only the task description', function () {
     expect($task->fresh()->description)->toBe('Collaborator update');
 });
 
+it('preserves rich text while removing unsafe description markup', function () {
+    $task = Task::factory()->for($this->project)->create();
+
+    $this->actingAs($this->owner);
+
+    Livewire::test(TaskDetails::class)
+        ->call('openTask', $task->id)
+        ->set('description', '<p>Useful <strong>formatted</strong> text</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>List item</li></ol><img src="x" onerror="alert(1)"><a href="javascript:alert(1)" onclick="alert(2)">unsafe link</a>')
+        ->call('save');
+
+    $description = $task->fresh()->description;
+
+    expect($description)
+        ->toContain('<p>Useful <strong>formatted</strong> text</p>')
+        ->toContain('<li data-list="bullet">')
+        ->toContain('<a>unsafe link</a>')
+        ->not->toContain('<img')
+        ->not->toContain('onerror')
+        ->not->toContain('onclick')
+        ->not->toContain('javascript:');
+});
+
 it('allows project owner to edit task fields', function () {
     $task = Task::factory()->for($this->project)->create(['title' => 'Original']);
 
