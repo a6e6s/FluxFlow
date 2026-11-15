@@ -47,6 +47,11 @@
 				applyAppearance(this.isDark() ? 'light' : 'dark');
 			},
 		};
+
+		// wire:navigate swaps the page without re-running this script, so re-apply the saved theme.
+		document.addEventListener('livewire:navigated', () => {
+			document.documentElement.classList.toggle('dark', isDarkAppearance(getAppearance()));
+		});
 	})();
 </script>
 

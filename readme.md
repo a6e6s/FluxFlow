@@ -41,6 +41,9 @@ FluxFlow is a high-productivity Kanban workspace designed to bridge the gap betw
 
 ![Task Details](public/screenshots/task-details.png)
 
+### 🏠 Home Overview
+A home page at `/home` with widgets across all of your projects: summary counts, overdue and upcoming deadlines, your open tasks, project progress, effort load, recent activity, and pending invitations. Widgets only show projects and tasks you own or collaborate on, and they load lazily.
+
 ### 🔍 Global Search
 - **Universal Search** - Find projects and tasks across your workspace
 - **Keyboard Shortcut** - Press `⌘K` or `Ctrl+K` to open instantly
@@ -159,6 +162,56 @@ The API documentation is generated with Scramble and is available at `/docs/api`
 | `GET` | `/api/v1/projects/{project}/tasks/{task}` | Show a task |
 | `PUT` / `PATCH` | `/api/v1/projects/{project}/tasks/{task}` | Update a task |
 | `DELETE` | `/api/v1/projects/{project}/tasks/{task}` | Delete a task |
+| `GET` | `/api/v1/home/summary` | Task counts for a period, plus active projects |
+| `GET` | `/api/v1/home/due-soon` | Overdue tasks and tasks due today |
+| `GET` | `/api/v1/home/upcoming-deadlines` | Open tasks due in the next 7 days |
+| `GET` | `/api/v1/home/my-tasks` | Open tasks assigned to you |
+| `GET` | `/api/v1/home/project-progress` | Active projects with completion percentage |
+| `GET` | `/api/v1/home/effort-load` | Open effort points per project for a period |
+| `GET` | `/api/v1/home/recent-activity` | Your most recently updated tasks |
+| `GET` | `/api/v1/home/invitations` | Pending task invitations addressed to your email |
+
+#### Home Endpoints
+
+These endpoints power the home page widgets. They only return projects and tasks you own or collaborate on. Invitations are only returned when they were sent to your account email.
+
+| Endpoint | Description | Query parameters |
+|----------|-------------|------------------|
+| `summary` | Counts of your visible tasks due within the period: `open` (not done), `doing`, `review`, and `done`. Also returns `active_projects`, which is not period-based. The response includes the resolved `period` (`start`, `end`, `label`). | `period`, `from`, `to` |
+| `due-soon` | Overdue tasks plus tasks due today that are not done, oldest first, up to 8. | none |
+| `upcoming-deadlines` | Open tasks due tomorrow through seven days from now, earliest first, up to 8. | none |
+| `my-tasks` | Open tasks assigned to you, earliest due date first, up to 8. | none |
+| `project-progress` | Up to 6 active projects with `tasks_count`, `done_tasks_count`, and `progress_percent` (rounded). | none |
+| `effort-load` | Up to 6 projects ranked by open `effort` points for tasks due in the period, with `open_tasks` counts. | `period`, `from`, `to` |
+| `recent-activity` | Up to 8 of your visible tasks, most recently updated first. | none |
+| `invitations` | Up to 5 pending task invitations addressed to your email. Each includes a `url` to accept or decline. | none |
+
+**Period parameters** (`summary`, `effort-load`):
+
+- `period` - `this_month` (default), `last_month`, or `custom`.
+- `from` and `to` - required when `period=custom`, formatted as `YYYY-MM-DD`. `to` must not be before `from`. Invalid input returns `422`.
+
+Example:
+
+```http
+GET /api/v1/home/summary?period=custom&from=2026-03-01&to=2026-03-31
+X-API-Key: <api-key>
+```
+
+```json
+{
+    "data": {
+        "period": { "start": "2026-03-01", "end": "2026-03-31", "label": "1 Mar 2026 – 31 Mar 2026" },
+        "open": 4,
+        "doing": 2,
+        "review": 1,
+        "done": 3,
+        "active_projects": 5
+    }
+}
+```
+
+The task-based endpoints (`due-soon`, `upcoming-deadlines`, `my-tasks`, `recent-activity`) return task objects with the same shape as the task responses below. `project-progress` and `effort-load` return the fields listed in the table, and `invitations` returns `id`, `task_id`, `task_title`, `inviter_name`, `expires_at`, and `url`.
 
 #### Project Payload
 

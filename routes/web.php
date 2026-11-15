@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InvitationController;
+use App\Livewire\HomePage;
 use App\Livewire\KanbanBoard;
 use App\Livewire\LandingPage;
 use App\Livewire\Settings\Appearance;
@@ -30,9 +31,17 @@ Route::get('language/{locale}', function (string $locale) {
 })->name('language.switch');
 
 // Dashboard (for authenticated users)
+Route::get('/home', HomePage::class)
+    ->middleware(['auth', 'verified'])
+    ->name('home');
+
 Route::get('/dashboard', KanbanBoard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::get('/projects/{projectId}', KanbanBoard::class)
+    ->middleware(['auth', 'verified'])
+    ->name('projects.show');
 
 Route::get('kanban', KanbanBoard::class)
     ->middleware(['auth', 'verified'])
