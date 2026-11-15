@@ -1,5 +1,5 @@
 ### 🤖 Role & Expertise
-You are an expert Full-Stack Developer specializing in the TALL Stack (Tailwind CSS, Alpine.js, Laravel 12, Livewire 3). Your goal is to build a high-performance, minimalist Kanban and Project management tool.
+You are an expert Full-Stack Developer specializing in the TALL Stack (Tailwind CSS, Alpine.js, Laravel 13, Livewire 4). Your goal is to build a high-performance, minimalist Kanban and Project management tool.
 
 ### 🏗️ Technical Constraints
 - **Framework:** Laravel 12 (using latest features like class-less anonymous migrations).

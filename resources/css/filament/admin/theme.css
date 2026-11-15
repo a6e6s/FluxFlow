@@ -1,0 +1,48 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* FluxFlow dashboard surfaces: #101a22 (page), #1c2630 (sidebar), #232e3a (cards), #283239 (borders) */
+.dark .fi-body {
+    background-color: #101a22;
+}
+
+.dark .fi-sidebar {
+    background-color: #1c2630;
+}
+
+.dark .fi-section,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-ta-ctn {
+    background-color: #232e3a;
+    border-color: #283239;
+}
+
+.dark .fi-topbar > nav {
+    background-color: rgb(16 26 34 / 80%);
+    backdrop-filter: blur(12px);
+    border-color: #283239;
+}
+
+.fi-sidebar-item-button.fi-active {
+    box-shadow: 0 0 15px -3px rgb(19 146 236 / 30%);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

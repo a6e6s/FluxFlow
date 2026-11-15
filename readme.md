@@ -345,6 +345,17 @@ fluxflow/
 
 ---
 
+## 🛡️ Admin Panel
+
+FluxFlow ships a Filament v5 admin panel at `/admin`, available only to users with `is_admin` set.
+
+- **Grant access:** `php artisan tinker --execute 'User::where("email", "you@example.com")->update(["is_admin" => true]);'` or toggle **Admin** on the user's edit page.
+- **Resources:** Projects (archive/restore, trash), Tasks (with Invitations and Attachments relation managers), Users.
+- **Dashboard:** task counts per status and overdue tasks.
+- **Language:** the EN / عربي switch in the user menu shares the app's `locale` session, so it also changes the public app. Arabic renders right-to-left.
+
+---
+
 ## 🔧 Configuration
 
 ### Environment Variables
