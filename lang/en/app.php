@@ -11,6 +11,7 @@ return [
     // Sidebar
     'active_projects' => 'Active Projects',
     'shared_projects' => 'Shared Projects',
+    'shared_projects_empty' => 'Projects shared with you will appear here.',
     'archived_projects' => 'Archived Projects',
     'no_projects' => 'No projects yet',
     'no_project' => 'No project',

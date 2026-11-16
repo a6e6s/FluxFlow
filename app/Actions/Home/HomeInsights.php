@@ -9,6 +9,8 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskInvitation;
 use App\Models\User;
+use Carbon\CarbonInterface;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
@@ -19,9 +21,7 @@ use Illuminate\Support\Collection as SupportCollection;
 class HomeInsights
 {
     /**
-     * Counts of visible tasks due within the period, plus all active projects.
-     *
-     * @return array{open: int, doing: int, review: int, done: int, active_projects: int}
+     * @return array{open: int, doing: int, review: int, done: int, overdue: int, active_projects: int}
      */
     public function summary(User $user, string $from, string $to): array
     {
@@ -37,6 +37,7 @@ class HomeInsights
             'doing' => $this->countFor($countByStatus, TaskStatus::Doing),
             'review' => $this->countFor($countByStatus, TaskStatus::Review),
             'done' => $this->countFor($countByStatus, TaskStatus::Done),
+            'overdue' => Task::query()->visibleTo($user)->overdue()->count(),
             'active_projects' => Project::query()->visibleTo($user)->active()->count(),
         ];
     }
@@ -48,7 +49,7 @@ class HomeInsights
     {
         return Task::query()
             ->visibleTo($user)
-            ->with('project:id,title')
+            ->with('project:id,title,color')
             ->where(fn (Builder $query) => $query->overdue()
                 ->orWhere(fn (Builder $query) => $query->dueToday()->whereNot('status', TaskStatus::Done)))
             ->orderBy('due_date')
@@ -65,7 +66,7 @@ class HomeInsights
     {
         return Task::query()
             ->visibleTo($user)
-            ->with('project:id,title')
+            ->with('project:id,title,color')
             ->whereNot('status', TaskStatus::Done)
             ->whereBetween('due_date', [today()->addDay(), today()->addDays(7)])
             ->orderBy('due_date')
@@ -82,7 +83,7 @@ class HomeInsights
     {
         return Task::query()
             ->visibleTo($user)
-            ->with('project:id,title')
+            ->with('project:id,title,color')
             ->where('assigned_to', $user->id)
             ->whereNot('status', TaskStatus::Done)
             ->orderBy('due_date')
@@ -104,6 +105,7 @@ class HomeInsights
             ->withCount([
                 'tasks',
                 'tasks as done_tasks_count' => fn (Builder $query) => $query->where('status', TaskStatus::Done),
+                'tasks as overdue_tasks_count' => fn (Builder $query) => $query->overdue(),
             ])
             ->limit(6)
             ->get();
@@ -139,7 +141,7 @@ class HomeInsights
     {
         return Task::query()
             ->visibleTo($user)
-            ->with('project:id,title')
+            ->with('project:id,title,color')
             ->latest('updated_at')
             ->limit(8)
             ->get();
@@ -158,6 +160,47 @@ class HomeInsights
             ->latest()
             ->limit(5)
             ->get();
+    }
+
+    /**
+     * Per-day counts within the period, used for the stat card sparklines.
+     *
+     * @return array{open: list<int>, doing: list<int>, review: list<int>, done: list<int>, active_projects: list<int>}
+     */
+    public function dailySeries(User $user, string $from, string $to): array
+    {
+        $days = collect(CarbonPeriod::create($from, $to))
+            ->map(fn (CarbonInterface $day): string => $day->toDateString())
+            ->values();
+
+        $tasksByDayAndStatus = Task::query()
+            ->visibleTo($user)
+            ->whereBetween('due_date', [$from, $to])
+            ->selectRaw('due_date, status, count(*) as total')
+            ->groupBy('due_date', 'status')
+            ->get()
+            ->groupBy(fn ($row): string => substr((string) $row->due_date, 0, 10));
+
+        $countFor = fn (string $day, ?TaskStatus $status): int => (int) ($tasksByDayAndStatus->get($day)?->filter(
+            fn ($row): bool => $status === null
+                ? $row->status !== TaskStatus::Done
+                : $row->status === $status
+        )->sum('total') ?? 0);
+
+        $projectsByDay = Project::query()
+            ->visibleTo($user)
+            ->active()
+            ->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
+            ->get(['created_at'])
+            ->groupBy(fn (Project $project): string => $project->created_at->toDateString());
+
+        return [
+            'open' => $days->map(fn (string $day): int => $countFor($day, null))->all(),
+            'doing' => $days->map(fn (string $day): int => $countFor($day, TaskStatus::Doing))->all(),
+            'review' => $days->map(fn (string $day): int => $countFor($day, TaskStatus::Review))->all(),
+            'done' => $days->map(fn (string $day): int => $countFor($day, TaskStatus::Done))->all(),
+            'active_projects' => $days->map(fn (string $day): int => $projectsByDay->get($day)?->count() ?? 0)->all(),
+        ];
     }
 
     /**

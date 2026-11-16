@@ -24,7 +24,9 @@ class ProjectProgressResource extends JsonResource
             'color' => $this->color,
             'tasks_count' => $total,
             'done_tasks_count' => $done,
+            'overdue_tasks_count' => (int) ($this->overdue_tasks_count ?? 0),
             'progress_percent' => $total > 0 ? (int) round($done / $total * 100) : 0,
+            'status' => $this->progressStatus(),
         ];
     }
 }

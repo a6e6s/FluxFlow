@@ -11,6 +11,7 @@ return [
     // Sidebar
     'active_projects' => 'المشاريع النشطة',
     'shared_projects' => 'المشاريع المشتركة',
+    'shared_projects_empty' => 'ستظهر المشاريع التي تتم مشاركتها معك هنا.',
     'archived_projects' => 'المشاريع المؤرشفة',
     'no_projects' => 'لا توجد مشاريع بعد',
     'no_project' => 'بدون مشروع',

@@ -177,11 +177,11 @@ These endpoints power the home page widgets. They only return projects and tasks
 
 | Endpoint | Description | Query parameters |
 |----------|-------------|------------------|
-| `summary` | Counts of your visible tasks due within the period: `open` (not done), `doing`, `review`, and `done`. Also returns `active_projects`, which is not period-based. The response includes the resolved `period` (`start`, `end`, `label`). | `period`, `from`, `to` |
+| `summary` | Counts of your visible tasks due within the period: `open` (not done), `doing`, `review`, and `done`. `overdue` counts all of your overdue tasks regardless of period. Also returns `active_projects`, which is not period-based. The response includes the resolved `period` (`start`, `end`, `label`). | `period`, `from`, `to` |
 | `due-soon` | Overdue tasks plus tasks due today that are not done, oldest first, up to 8. | none |
 | `upcoming-deadlines` | Open tasks due tomorrow through seven days from now, earliest first, up to 8. | none |
 | `my-tasks` | Open tasks assigned to you, earliest due date first, up to 8. | none |
-| `project-progress` | Up to 6 active projects with `tasks_count`, `done_tasks_count`, and `progress_percent` (rounded). | none |
+| `project-progress` | Up to 6 active projects with `tasks_count`, `done_tasks_count`, `overdue_tasks_count`, `progress_percent` (rounded), and `status`: `completed`, `not_started`, `at_risk` (has overdue tasks), or `in_progress`. | none |
 | `effort-load` | Up to 6 projects ranked by open `effort` points for tasks due in the period, with `open_tasks` counts. | `period`, `from`, `to` |
 | `recent-activity` | Up to 8 of your visible tasks, most recently updated first. | none |
 | `invitations` | Up to 5 pending task invitations addressed to your email. Each includes a `url` to accept or decline. | none |

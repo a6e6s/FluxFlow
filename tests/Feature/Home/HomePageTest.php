@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Home\HomeInsights;
 use App\Enums\TaskStatus;
 use App\Livewire\Home\DueSoon;
 use App\Livewire\Home\EffortLoad;
@@ -127,6 +128,25 @@ test('summary stats count only tasks due inside the selected period', function (
     $metrics = Livewire::test(SummaryStats::class, $range)->instance()->metrics();
 
     expect(collect($metrics)->firstWhere('label', __('home.stats.done'))['value'])->toBe(1);
+});
+
+test('daily series counts tasks per day within the period', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create(['user_id' => $user->id]);
+
+    Task::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Done, 'due_date' => '2026-11-02']);
+    Task::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Todo, 'due_date' => '2026-11-02']);
+
+    $series = app(HomeInsights::class)->dailySeries($user, '2026-11-01', '2026-11-03');
+
+    expect($series['done'])->toBe([0, 1, 0])
+        ->and($series['open'])->toBe([0, 1, 0]);
+});
+
+test('the sidebar keeps the shared projects section with an empty message', function () {
+    actingAs(User::factory()->create());
+
+    get('/home')->assertOk()->assertSee(__('app.shared_projects_empty'));
 });
 
 test('home period resolves last month and falls back to this month for invalid custom dates', function () {

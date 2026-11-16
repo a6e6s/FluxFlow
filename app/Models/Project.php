@@ -142,4 +142,20 @@ class Project extends Model
     {
         return $this->archived_at !== null;
     }
+
+    /**
+     * Requires the tasks_count, done_tasks_count and overdue_tasks_count counts from HomeInsights::projectProgress().
+     */
+    public function progressStatus(): string
+    {
+        $total = (int) $this->tasks_count;
+        $done = (int) $this->done_tasks_count;
+
+        return match (true) {
+            $total > 0 && $done === $total => 'completed',
+            $done === 0 => 'not_started',
+            (int) ($this->overdue_tasks_count ?? 0) > 0 => 'at_risk',
+            default => 'in_progress',
+        };
+    }
 }

@@ -38,7 +38,7 @@ class ProjectSidebar extends Component
             ->get();
     }
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function sharedProjects(): Collection
     {
         return Project::query()

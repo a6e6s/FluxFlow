@@ -56,9 +56,7 @@
                     ])>
                     <div x-show="path === '/home'" class="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-primary"></div>
 
-                    <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <x-lucide-house class="size-4" />
-                    </span>
+                    <x-lucide-house class="size-5 shrink-0 text-[#1392ec]" />
 
                     @if (!$collapsed)
                         <span class="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white">{{ __('home.nav') }}</span>
@@ -205,7 +203,7 @@
             </div>
 
             {{-- Shared Projects --}}
-            @if ($this->sharedProjects->isNotEmpty())
+            @if ($this->sharedProjects->isNotEmpty() || ! $collapsed)
                 @if (!$collapsed)
                     <details class="group" @if ($this->sharedProjects->contains('id', $selectedProjectId)) open @endif>
                         <summary
@@ -215,6 +213,9 @@
                                 class="size-4 transition-transform duration-200 group-open:rotate-180" />
                         </summary>
                         <div class="mt-1 space-y-1">
+                            @if ($this->sharedProjects->isEmpty())
+                                <p class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">{{ __('app.shared_projects_empty') }}</p>
+                            @endif
                             @foreach ($this->sharedProjects as $project)
                                 @php
                                     $projectBorderColor = $project->color ?? '#3b82f6';

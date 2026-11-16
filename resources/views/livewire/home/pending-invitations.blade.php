@@ -11,6 +11,8 @@
             </a>
         </div>
     @empty
-        <p class="text-sm text-slate-500 dark:text-slate-400">{{ __('home.empty') }}</p>
+        <x-home-empty icon="mail" :title="__('home.states.invitations_title')">
+            {{ __('home.states.invitations_text') }}
+        </x-home-empty>
     @endforelse
 </x-home-card>
