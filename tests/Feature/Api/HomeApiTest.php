@@ -56,11 +56,17 @@ test('home analytics exclude tasks from archived projects', function (): void {
 
     Task::factory()->create(['project_id' => $activeProject->id, 'status' => 'doing', 'due_date' => today(), 'effort_score' => 2]);
     Task::factory()->create(['project_id' => $archivedProject->id, 'status' => 'doing', 'due_date' => today(), 'effort_score' => 5]);
+    Task::factory()->create(['project_id' => $archivedProject->id, 'status' => 'todo', 'due_date' => today()->subDay()]);
 
     getJson('/api/v1/home/summary')
         ->assertOk()
         ->assertJsonPath('data.doing', 1)
-        ->assertJsonPath('data.open', 1);
+        ->assertJsonPath('data.open', 1)
+        ->assertJsonPath('data.overdue', 0);
+
+    getJson('/api/v1/home/due-soon')
+        ->assertOk()
+        ->assertJsonCount(1, 'data');
 
     getJson('/api/v1/home/effort-load')
         ->assertOk()

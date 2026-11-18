@@ -25,7 +25,7 @@ class HomeInsights
      */
     public function summary(User $user, string $from, string $to): array
     {
-        $countByStatus = $this->analyticsTasks($user)
+        $countByStatus = $this->activeTasks($user)
             ->whereBetween('due_date', [$from, $to])
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
@@ -36,7 +36,7 @@ class HomeInsights
             'doing' => $this->countFor($countByStatus, TaskStatus::Doing),
             'review' => $this->countFor($countByStatus, TaskStatus::Review),
             'done' => $this->countFor($countByStatus, TaskStatus::Done),
-            'overdue' => $this->analyticsTasks($user)->overdue()->count(),
+            'overdue' => $this->activeTasks($user)->overdue()->count(),
             'active_projects' => Project::query()->visibleTo($user)->active()->count(),
         ];
     }
@@ -46,8 +46,7 @@ class HomeInsights
      */
     public function dueSoon(User $user): Collection
     {
-        return Task::query()
-            ->visibleTo($user)
+        return $this->activeTasks($user)
             ->with('project:id,title,color')
             ->where(fn (Builder $query) => $query->overdue()
                 ->orWhere(fn (Builder $query) => $query->dueToday()->whereNot('status', TaskStatus::Done)))
@@ -117,7 +116,7 @@ class HomeInsights
      */
     public function effortLoad(User $user, string $from, string $to): SupportCollection
     {
-        return $this->analyticsTasks($user)
+        return $this->activeTasks($user)
             ->join('projects', 'projects.id', '=', 'tasks.project_id')
             ->whereNull('projects.deleted_at')
             ->whereNull('projects.archived_at')
@@ -172,7 +171,7 @@ class HomeInsights
             ->map(fn (CarbonInterface $day): string => $day->toDateString())
             ->values();
 
-        $tasksByDayAndStatus = $this->analyticsTasks($user)
+        $tasksByDayAndStatus = $this->activeTasks($user)
             ->whereBetween('due_date', [$from, $to])
             ->selectRaw('due_date, status, count(*) as total')
             ->groupBy('due_date', 'status')
@@ -206,7 +205,7 @@ class HomeInsights
      *
      * @return Builder<Task>
      */
-    private function analyticsTasks(User $user): Builder
+    private function activeTasks(User $user): Builder
     {
         return Task::query()
             ->visibleTo($user)
