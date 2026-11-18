@@ -418,7 +418,7 @@
 
     {{-- Collapse handle: a slim tab on the inner edge, centered vertically --}}
     <button type="button" wire:click="toggleSidebar"
-        class="absolute end-0 top-1/2 z-10 flex h-12 w-3.5 -translate-y-1/2 items-center justify-center rounded-s-md border border-e-0 border-slate-200 bg-slate-50 text-slate-500 shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-[#283239] dark:bg-[#1c2630] dark:text-slate-300 dark:hover:bg-[#283239] dark:hover:text-white"
+        class="absolute end-0 top-1/2 z-10 hidden h-12 w-3.5 md:flex -translate-y-1/2 items-center justify-center rounded-s-md border border-e-0 border-slate-200 bg-slate-50 text-slate-500 shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-[#283239] dark:bg-[#1c2630] dark:text-slate-300 dark:hover:bg-[#283239] dark:hover:text-white"
         aria-label="{{ $collapsed ? 'Expand sidebar' : 'Collapse sidebar' }}"
         title="{{ $collapsed ? 'Expand sidebar' : 'Collapse sidebar' }}">
         @if ($collapsed)

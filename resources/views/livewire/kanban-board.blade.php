@@ -1,7 +1,7 @@
 <div x-data="kanbanBoard()" x-ref="kanbanRoot" class="flex-1 flex flex-col">
     @if ($this->project)
         {{-- Project Header --}}
-        <div class="px-8 py-6 flex items-end justify-between border-b border-slate-200 dark:border-[#283239]">
+        <div class="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 px-4 py-4 md:px-8 md:py-6 dark:border-[#283239]">
             <div>
                 <div class="flex items-center gap-2 mb-1">
                     <span class="text-xs font-semibold text-[#1392ec] uppercase tracking-wider">
@@ -11,7 +11,7 @@
                         <span class="text-xs text-slate-500">• {{ __('app.archived') }}</span>
                     @endif
                 </div>
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
                     @if ($this->project->icon)
                         <span>{{ $this->project->icon }}</span>
                     @endif
@@ -48,9 +48,25 @@
             </div>
         </div>
 
+        {{-- Mobile Column Switcher --}}
+        <div class="flex gap-2 overflow-x-auto px-4 pt-3 md:hidden">
+            @foreach ([
+                'todo' => __('app.todo'),
+                'doing' => __('app.doing'),
+                'review' => __('app.review'),
+                'done' => __('app.done'),
+            ] as $columnStatus => $columnTitle)
+                <button type="button"
+                    @click="document.querySelector('[data-board-column=&quot;{{ $columnStatus }}&quot;]')?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })"
+                    class="min-h-11 shrink-0 rounded-full border border-slate-200 bg-slate-100 px-4 text-sm font-medium text-slate-600 dark:border-[#283239] dark:bg-[#1c2630] dark:text-slate-300">
+                    {{ $columnTitle }}
+                </button>
+            @endforeach
+        </div>
+
         {{-- Kanban Columns --}}
-        <div class="flex-1 overflow-x-auto overflow-y-hidden p-8" style="height: calc(100vh - 200px);">
-            <div class="flex h-full gap-6 min-w-[1200px]">
+        <div class="flex-1 min-h-0 snap-x snap-mandatory overflow-x-auto overflow-y-hidden p-4 md:flex-none md:p-8 md:h-[calc(100vh-200px)]">
+            <div class="flex h-full gap-4 md:gap-6 md:min-w-[1200px]">
                 {{-- To Do Column --}}
                 @include('livewire.partials.kanban-column', [
                     'status' => 'todo',

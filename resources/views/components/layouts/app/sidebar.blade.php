@@ -127,6 +127,8 @@
 
         {{ $slot }}
 
+        @include('partials.install-prompt')
+
         @fluxScripts
     </body>
 </html>

@@ -8,6 +8,12 @@ return [
     'settings' => 'Settings',
     'log_out' => 'Log Out',
 
+    // Install prompt
+    'install_title' => 'Install FluxFlow',
+    'install_description' => 'Add FluxFlow to your home screen for quick access.',
+    'install_action' => 'Install',
+    'install_dismiss' => 'Not now',
+
     // Sidebar
     'active_projects' => 'Active Projects',
     'shared_projects' => 'Shared Projects',
@@ -126,4 +132,8 @@ return [
     'saving' => 'Saving...',
     'deleting' => 'Deleting...',
     'task_deleted' => 'Task deleted successfully.',
+    'boards' => 'Boards',
+    'search' => 'Search',
+    'profile' => 'Profile',
+    'mobile_navigation' => 'Mobile navigation',
 ];

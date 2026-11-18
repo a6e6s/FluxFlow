@@ -62,7 +62,7 @@
     ></div>
 
     {{-- Modal --}}
-    <div class="flex min-h-full items-center justify-center p-4">
+    <div class="flex min-h-full items-end justify-center p-0 md:items-center md:p-4">
         <div
             x-show="open"
             x-transition:enter="transition ease-out duration-200"
@@ -72,8 +72,10 @@
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
             @click.stop
-            class="relative w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]"
+            class="relative w-full max-w-xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22] max-md:max-h-[92vh] max-md:overflow-y-auto max-md:rounded-b-none max-md:rounded-t-2xl max-md:border-x-0 max-md:border-b-0"
         >
+            {{-- Mobile Drag Handle --}}
+            <div class="mx-auto mt-2 h-1 w-9 rounded-full bg-slate-300 md:hidden dark:bg-slate-600"></div>
             {{-- Header --}}
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-[#283239]">
                 <div class="flex items-center gap-3">

@@ -7,7 +7,7 @@
     'emptyIcon' => 'circle',
 ])
 
-<div class="flex flex-col w-80 h-full shrink-0 {{ $status === 'done' ? 'opacity-70 hover:opacity-100 transition-opacity' : '' }}">
+<div data-board-column="{{ $status }}" class="flex flex-col w-[85vw] max-w-sm snap-center md:w-80 md:max-w-none h-full shrink-0 {{ $status === 'done' ? 'opacity-70 hover:opacity-100 transition-opacity' : '' }}">
     {{-- Column Header --}}
     <div class="flex items-center justify-between mb-4 px-1">
         <div class="flex items-center gap-2">

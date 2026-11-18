@@ -8,12 +8,17 @@
 
 <body x-data="{
     currentProjectId: null,
+    mobileView: 'boards',
     canCreateTask() {
         return document.querySelector('[data-create-task-shortcut]') !== null;
     },
     init() {
         Livewire.on('project-selected', (data) => {
             this.currentProjectId = data.projectId;
+            this.mobileView = 'boards';
+        });
+        document.addEventListener('livewire:navigated', () => {
+            this.mobileView = 'boards';
         });
     },
     handleKeydown(e) {
@@ -33,13 +38,13 @@
     class="font-sans bg-slate-100 dark:bg-[#101a22] text-slate-900 dark:text-white overflow-hidden h-screen flex flex-col" style="font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;">
     {{-- Header --}}
     <header
-        class="h-16 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-slate-700/50 bg-white dark:bg-[#111518] px-6 z-20">
+        class="h-16 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-slate-700/50 bg-white dark:bg-[#111518] px-4 md:px-6 z-20">
         <div class="flex items-center gap-8">
             {{-- Logo --}}
             <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-3 text-[#1392ec]">
                 <div class=" flex items-center justify-center rounded-lg bg-[#1392ec]/5">
                 </div>
-                <img src="{{ asset('logo.png') }}" alt="" class="flex items-center w-40">
+                <img src="{{ asset('logo.png') }}" alt="" class="flex items-center w-28 md:w-40">
                 {{-- <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">FluxFlow</h2> --}}
             </a>
         </div>
@@ -149,16 +154,48 @@
 
     {{-- Main Content --}}
     <div class="flex flex-1 min-h-0 overflow-hidden">
-        {{-- Sidebar with @persist for SPA-like navigation --}}
-        @persist('sidebar')
-            <livewire:project-sidebar />
-        @endpersist
+        {{-- Sidebar with @persist for SPA-like navigation; full-screen Projects view on mobile --}}
+        <div class="md:flex md:static md:h-full"
+            :class="mobileView === 'projects' ? 'fixed inset-0 z-30 flex bg-white dark:bg-slate-900 [&>*]:w-full [&_aside]:w-full' : 'hidden'">
+            @persist('sidebar')
+                <livewire:project-sidebar />
+            @endpersist
+        </div>
 
         {{-- Main Area --}}
-        <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#101a22]">
+        <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#101a22] max-md:pb-16">
             {{ $slot }}
         </main>
     </div>
+
+    {{-- Mobile Bottom Navigation --}}
+    <nav data-mobile-nav aria-label="{{ __('app.mobile_navigation') }}"
+        class="fixed inset-x-0 bottom-0 z-40 flex h-16 items-stretch border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur dark:border-slate-700/50 dark:bg-[#111518]/95 md:hidden">
+        <a href="{{ route('home') }}" wire:navigate @click="mobileView = 'boards'"
+            x-data="{ path: window.location.pathname }"
+            x-on:livewire:navigated.window="path = window.location.pathname"
+            :class="path === '/home' ? 'text-[#1392ec]' : 'text-slate-500 dark:text-slate-400'"
+            class="flex min-h-11 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium">
+            <x-lucide-house class="size-5" />
+            {{ __('home.nav') }}
+        </a>
+        <button type="button" @click="mobileView = mobileView === 'projects' ? 'boards' : 'projects'"
+            :class="mobileView === 'projects' ? 'text-[#1392ec]' : 'text-slate-500 dark:text-slate-400'"
+            class="flex min-h-11 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium">
+            <x-lucide-folder-kanban class="size-5" />
+            {{ __('app.projects') }}
+        </button>
+        <button type="button" @click="$dispatch('open-global-search')"
+            class="flex min-h-11 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+            <x-lucide-search class="size-5" />
+            {{ __('app.search') }}
+        </button>
+        <button type="button" @click="$dispatch('open-user-profile-modal')"
+            class="flex min-h-11 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+            <x-lucide-user-round class="size-5" />
+            {{ __('app.profile') }}
+        </button>
+    </nav>
 
     {{-- Modals & Slide-overs --}}
     <livewire:task-details />
@@ -168,6 +205,8 @@
     <livewire:create-task-modal />
     <livewire:api-key-modal />
     <livewire:user-profile-modal />
+
+    @include('partials.install-prompt')
 
 </body>
 

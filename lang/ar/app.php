@@ -6,6 +6,12 @@ return [
     'search_placeholder' => 'البحث في المشاريع والمهام...',
     'notifications' => 'الإشعارات',
     'settings' => 'الإعدادات',
+    // Install prompt
+    'install_title' => 'تثبيت FluxFlow',
+    'install_description' => 'أضف FluxFlow إلى شاشتك الرئيسية للوصول السريع.',
+    'install_action' => 'تثبيت',
+    'install_dismiss' => 'ليس الآن',
+
     'log_out' => 'تسجيل الخروج',
 
     // Sidebar
@@ -126,4 +132,8 @@ return [
     'saving' => 'جاري الحفظ...',
     'deleting' => 'جاري الحذف...',
     'task_deleted' => 'تم حذف المهمة بنجاح.',
+    'boards' => 'اللوحات',
+    'search' => 'بحث',
+    'profile' => 'الملف الشخصي',
+    'mobile_navigation' => 'التنقل في الجوال',
 ];

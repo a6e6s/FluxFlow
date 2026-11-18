@@ -53,12 +53,14 @@
 
     {{-- Slide-over Panel --}}
     <div x-show="open" x-transition:enter="transform transition ease-out duration-300"
-        x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full" x-transition:enter-end="translate-x-0"
-        x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full"
-        class="absolute inset-y-0 ltr:right-0 rtl:left-0 w-full max-w-xl flex">
+        x-transition:enter-start="translate-y-full md:translate-y-0 md:ltr:translate-x-full md:rtl:-translate-x-full" x-transition:enter-end="translate-y-0 md:translate-x-0"
+        x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-y-0 md:translate-x-0"
+        x-transition:leave-end="translate-y-full md:translate-y-0 md:ltr:translate-x-full md:rtl:-translate-x-full"
+        class="absolute inset-y-0 ltr:right-0 rtl:left-0 w-full max-w-xl flex max-md:inset-x-0 max-md:top-auto max-md:bottom-0 max-md:h-auto max-md:max-w-none max-md:max-h-[92vh]">
         <div
-            class="relative flex w-full flex-col ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22]">
+            class="relative flex w-full flex-col ltr:border-l rtl:border-r border-slate-200 bg-white shadow-2xl dark:border-[#283239] dark:bg-[#101a22] max-md:max-h-[92vh] max-md:rounded-t-2xl max-md:border-x-0 max-md:border-t max-md:ltr:border-l-0 max-md:rtl:border-r-0">
+            {{-- Mobile Drag Handle --}}
+            <div class="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-slate-300 md:hidden dark:bg-slate-600"></div>
             {{-- Header --}}
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-[#283239]">
                 <div class="flex items-center gap-3">
@@ -81,7 +83,7 @@
 
             @if ($this->task)
                 {{-- Content --}}
-                <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+                <div class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4">
                     {{-- Title --}}
                     <div>
                         <input type="text" wire:model="title" @readonly(!$this->isOwner)
