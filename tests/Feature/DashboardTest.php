@@ -24,5 +24,5 @@ test('authenticated users are redirected from the landing page to the dashboard'
 
     actingAs($user);
 
-    get('/')->assertRedirect('/dashboard');
+    get('/')->assertRedirect('/home');
 });

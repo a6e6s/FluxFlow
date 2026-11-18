@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
         ]);
 
+        $middleware->redirectUsersTo(fn (): string => route('home'));
+
         $middleware->api(prepend: [
             AuthenticateApiKey::class,
         ]);

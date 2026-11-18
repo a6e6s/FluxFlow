@@ -15,7 +15,7 @@ test('new users can register', function () {
     ]);
 
     $response->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        ->assertRedirect('/home');
 
     $this->assertAuthenticated();
 });
