@@ -49,6 +49,26 @@ test('summary counts tasks due in the requested period', function (): void {
         ->assertJsonPath('data.done', 0);
 });
 
+test('home analytics exclude tasks from archived projects', function (): void {
+    $user = signInWithApiKey();
+    $activeProject = Project::factory()->create(['user_id' => $user->id]);
+    $archivedProject = Project::factory()->archived()->create(['user_id' => $user->id]);
+
+    Task::factory()->create(['project_id' => $activeProject->id, 'status' => 'doing', 'due_date' => today(), 'effort_score' => 2]);
+    Task::factory()->create(['project_id' => $archivedProject->id, 'status' => 'doing', 'due_date' => today(), 'effort_score' => 5]);
+
+    getJson('/api/v1/home/summary')
+        ->assertOk()
+        ->assertJsonPath('data.doing', 1)
+        ->assertJsonPath('data.open', 1);
+
+    getJson('/api/v1/home/effort-load')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $activeProject->id)
+        ->assertJsonPath('data.0.effort', 2);
+});
+
 test('custom period requires valid dates', function (): void {
     signInWithApiKey();
 

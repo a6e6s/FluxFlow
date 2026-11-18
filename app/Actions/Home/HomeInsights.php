@@ -25,8 +25,7 @@ class HomeInsights
      */
     public function summary(User $user, string $from, string $to): array
     {
-        $countByStatus = Task::query()
-            ->visibleTo($user)
+        $countByStatus = $this->analyticsTasks($user)
             ->whereBetween('due_date', [$from, $to])
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
@@ -37,7 +36,7 @@ class HomeInsights
             'doing' => $this->countFor($countByStatus, TaskStatus::Doing),
             'review' => $this->countFor($countByStatus, TaskStatus::Review),
             'done' => $this->countFor($countByStatus, TaskStatus::Done),
-            'overdue' => Task::query()->visibleTo($user)->overdue()->count(),
+            'overdue' => $this->analyticsTasks($user)->overdue()->count(),
             'active_projects' => Project::query()->visibleTo($user)->active()->count(),
         ];
     }
@@ -118,10 +117,10 @@ class HomeInsights
      */
     public function effortLoad(User $user, string $from, string $to): SupportCollection
     {
-        return Task::query()
-            ->visibleTo($user)
+        return $this->analyticsTasks($user)
             ->join('projects', 'projects.id', '=', 'tasks.project_id')
             ->whereNull('projects.deleted_at')
+            ->whereNull('projects.archived_at')
             ->whereNot('tasks.status', TaskStatus::Done)
             ->whereBetween('tasks.due_date', [$from, $to])
             ->groupBy('projects.id', 'projects.title')
@@ -173,8 +172,7 @@ class HomeInsights
             ->map(fn (CarbonInterface $day): string => $day->toDateString())
             ->values();
 
-        $tasksByDayAndStatus = Task::query()
-            ->visibleTo($user)
+        $tasksByDayAndStatus = $this->analyticsTasks($user)
             ->whereBetween('due_date', [$from, $to])
             ->selectRaw('due_date, status, count(*) as total')
             ->groupBy('due_date', 'status')
@@ -201,6 +199,18 @@ class HomeInsights
             'done' => $days->map(fn (string $day): int => $countFor($day, TaskStatus::Done))->all(),
             'active_projects' => $days->map(fn (string $day): int => $projectsByDay->get($day)?->count() ?? 0)->all(),
         ];
+    }
+
+    /**
+     * Tasks visible to the user that belong to active (non-archived) projects.
+     *
+     * @return Builder<Task>
+     */
+    private function analyticsTasks(User $user): Builder
+    {
+        return Task::query()
+            ->visibleTo($user)
+            ->whereHas('project', fn (Builder $query) => $query->active());
     }
 
     /**
