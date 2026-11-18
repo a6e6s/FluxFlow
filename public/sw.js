@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'fluxflow-v1';
+const CACHE_VERSION = 'fluxflow-v2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const OFFLINE_URL = '/offline.html';
 const PRECACHE_URLS = [
